@@ -45,7 +45,11 @@ export default function Login() {
       password: data.password,
       redirect: false
     })
-    console.log(res);
+    if (res?.ok) {
+      alert("login in success")
+    } else {
+      alert(res?.error)
+    }
   }
 
   return (
