@@ -1,16 +1,14 @@
 import React from 'react'
 import NavLink from './NavLink'
-import { Heart, User, Menu } from 'lucide-react'
+import { Heart, User } from 'lucide-react'
 import SearchBar from './SearchBar'
 import Cart from './Cart'
+import Link from 'next/link'
+import Sidebar from './mobile/Sidebar'
+import { links } from './navLinks'
 
 export default function Navbar() {
-    const links = [
-        { link: '/shop', label: "Shop" },
-        { link: '/about', label: "About" },
-        { link: '/categories', label: "Categories" },
-        { link: '/support', label: "Support" },
-    ]
+
 
     return (
         <div className='w-full h-20 bg-background border-b border-border px-6'>
@@ -19,7 +17,7 @@ export default function Navbar() {
                 {/* Left Side: Logo & Navigation */}
                 <div className='flex items-center gap-10'>
                     {/* Logo */}
-                    <h2 className='text-2xl font-bold text-foreground tracking-tight'>Aetheria</h2>
+                    <h2 className='text-lg md:text-2xl font-bold text-foreground tracking-tight'>DeshiHat</h2>
 
                     {/* Navigation Links */}
                     <div className='hidden md:block'>
@@ -27,7 +25,9 @@ export default function Navbar() {
                             {
                                 links.map((navItem) => (
                                     // Using the unique link path as the key instead of array index
-                                    <NavLink key={navItem.link} href={navItem.link}>
+                                    <NavLink
+                                        activeClassName='active'
+                                        key={navItem.link} href={navItem.link}>
                                         {navItem.label}
                                     </NavLink>
                                 ))
@@ -39,20 +39,14 @@ export default function Navbar() {
                 {/* Right Side: Search, Cart, Wishlist & Profile */}
                 <div className='flex items-center md:gap-6'>
                     {/* Shadcn Input with Search Icon */}
-                    <SearchBar />
-
+                    <div className='hidden md:block max-w-64'>
+                        <SearchBar />
+                    </div>
                     {/* Action Buttons */}
-                    <div className='flex items-center gap-4 text-foreground'>
+                    <div className='flex items-center md:gap-4 text-foreground'>
                         <Cart />
-
                         {/* Mobile Menu Button - Added aria-label & button tag for accessibility */}
-                        <button
-                            className='md:hidden p-2 hover:text-primary transition-colors'
-                            aria-label="Open Menu"
-                        >
-                            <Menu size={20} />
-                        </button>
-
+                        <Sidebar />
                         {/* Desktop Only Actions */}
                         <div className='hidden md:flex items-center gap-4'>
                             {/* Wishlist Button */}
@@ -64,12 +58,12 @@ export default function Navbar() {
                             </button>
 
                             {/* Profile Button */}
-                            <button
+                            <Link href={'/login'}
                                 className='p-2 hover:text-primary transition-colors rounded-full hover:bg-muted/50'
                                 aria-label="View Profile"
                             >
                                 <User className='h-5 w-5 stroke-[1.5]' />
-                            </button>
+                            </Link>
                         </div>
                     </div>
 

@@ -34,7 +34,11 @@ export default function RootLayout({
       <header>
         <Navbar />
       </header>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <main className="px-3">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

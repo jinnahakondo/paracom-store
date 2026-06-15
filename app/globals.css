@@ -144,3 +144,7 @@
   bottom: -5px;
   background-color: var(--primary);
 }
+
+.sidebar-active {
+  @apply bg-primary/10 text-primary
+}
