@@ -2,12 +2,14 @@ import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 
 interface IUser extends Document {
+  provider: "credentials" | "google";
   name: string;
   email: string;
   password?: string;
-  provider: "credentials" | "google";
-  role: "user" | "admin";
   image?: string;
+  role: "user" | "admin";
+  phone?: string;
+  address?: string;
   isModified(path: string): boolean;
 }
 
@@ -44,6 +46,8 @@ const userSchema = new Schema<IUser>(
     image: {
       type: String,
     },
+    phone: String,
+    address: String
   },
   { timestamps: true }
 );
