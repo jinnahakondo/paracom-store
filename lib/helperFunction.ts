@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 type SuccessResponse<T = unknown> = {
     data?: T;
@@ -43,4 +44,10 @@ export const response = {
             { status }
         );
     },
+};
+
+
+
+export const isValidObjectId = (id: string) => {
+    return mongoose.Types.ObjectId.isValid(id);
 };

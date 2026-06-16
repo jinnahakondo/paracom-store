@@ -1,5 +1,7 @@
-import { response } from "@/lib/helperFunction";
+import { connectDb } from "@/lib/db/db";
+import { isValidObjectId, response } from "@/lib/helperFunction";
 import User from "@/schemas/user.schema";
+import bcrypt from "bcryptjs";
 import { NextRequest } from "next/server";
 
 interface routeProps {
@@ -11,6 +13,15 @@ interface routeProps {
 export async function GET(req: NextRequest, { params }: routeProps) {
     try {
         const { id } = await params
+
+        if (!isValidObjectId(id)) {
+            return response.error({
+                message: "invalid user id",
+                status: 400,
+            });
+        }
+
+        await connectDb()
 
         const user = await User.findById(id)
 
@@ -39,11 +50,57 @@ export async function PATCH(req: NextRequest, { params }: routeProps) {
     try {
         const { id } = await params
 
+        if (!isValidObjectId(id)) {
+            return response.error({
+                message: "invalid user id",
+                status: 400,
+            });
+        }
+
+
         const payload = await req.json()
+
+        // if payload is empty 
+        if (!Object.keys(payload).length) {
+            return response.error({
+                message: "update data is required",
+                status: 400,
+            });
+        }
+
+        const allowedUpdates = ['name', 'email', "password", 'image', "phone", "address"];
+
+        // make update obj 
+        const update: Record<string, unknown> = {};
+
+        // filter allowed fields
+        allowedUpdates.forEach(field => {
+            if (payload[field] !== undefined) {
+                update[field] = payload[field];
+            }
+        });
+
+        // no valid field found
+        if (!Object.keys(update).length) {
+            return response.error({
+                message: "no valid fields provided for update",
+                status: 400,
+            });
+        }
+
+        //has updated password
+        if (update.password) {
+            update.password = await bcrypt.hash(
+                update.password as string,
+                10
+            );
+        }
+
+        await connectDb()
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            payload,
+            update,
             { new: true, runValidators: true }
         );
 
@@ -73,6 +130,15 @@ export async function DELETE(req: NextRequest, { params }: routeProps) {
     try {
         const { id } = await params;
 
+        if (!isValidObjectId(id)) {
+            return response.error({
+                message: "invalid user id",
+                status: 400,
+            });
+        }
+
+        await connectDb()
+
         const deletedUser = await User.findByIdAndDelete(id);
 
         if (!deletedUser) {
@@ -93,4 +159,3 @@ export async function DELETE(req: NextRequest, { params }: routeProps) {
         })
     }
 }
-
