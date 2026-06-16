@@ -25,6 +25,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
 
+
   const {
     register,
     handleSubmit,
@@ -38,12 +39,14 @@ export default function Login() {
     },
   })
 
+ 
+
   const onSubmit = async (data: LoginFormData) => {
 
     const res = await signIn('credentials', {
       email: data.email,
       password: data.password,
-      redirect: false
+      redirect: false,
     })
     if (res?.ok) {
       alert("login in success")

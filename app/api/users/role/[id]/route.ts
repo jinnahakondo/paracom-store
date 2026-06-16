@@ -1,5 +1,5 @@
 
-import { verifyRole } from "@/auth/verifyAuth";
+import { verifyRole } from "@/lib/auth/verifyAuth";
 import { connectDb } from "@/lib/db/db";
 import { isValidId, response } from "@/lib/helperFunction";
 import User from "@/schemas/user.schema";

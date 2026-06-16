@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar/Navbar";
+import { Toaster } from 'sonner';
+import AuthProvider from "@/providers/AuthProvider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -36,7 +38,10 @@ export default function RootLayout({
       </header>
       <body className="min-h-full flex flex-col">
         <main className="px-3">
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+          <Toaster />
         </main>
       </body>
     </html>

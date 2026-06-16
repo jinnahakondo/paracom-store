@@ -1,5 +1,6 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
+import axios from "axios";
 
 import * as z from "zod"
 import {
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { baseSchema } from "@/lib/zod/zodSchema";
 import SocialLogin from "./SocialLogin";
 import Link from "next/link";
+import { toast } from "sonner";
 const registerSchema = baseSchema.pick({
     name: true,
     email: true,
@@ -48,8 +50,17 @@ export default function Register() {
         },
     })
 
-    const onSubmit = (data: RegisterSchema) => {
-        console.log('data:', data);
+    const onSubmit = async (data: RegisterSchema) => {
+        const user = {
+            name: data.name,
+            email: data.email,
+            password: data.password
+        }
+
+        const res = await axios.post('/api/register', user)
+        if (res.data.success) {
+            toast.success("Registration successfull")
+        }
     }
 
     return (

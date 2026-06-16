@@ -1,7 +1,8 @@
 import Login from '@/components/auth/Login'
 import React from 'react'
 
-export default function LoginPage() {
+export default async function LoginPage() {
+    
     return (
         <Login />
     )
