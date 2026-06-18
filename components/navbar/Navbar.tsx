@@ -17,11 +17,13 @@ export default function Navbar() {
 
                 {/* Left Side: Logo & Navigation */}
                 <div className='flex items-center gap-10'>
-                    <div className='flex items-center justify-center gap-2'>
+                    <div className='flex items-center justify-center '>
                         {/* Mobile Menu Button */}
+
                         <Sidebar />
+
                         {/* Logo */}
-                        <h2 className='text-lg md:text-2xl font-bold text-foreground tracking-tight'>DeshiHat</h2>
+                        <h2 className='text-lg md:text-2xl font-bold text-foreground tracking-tight ml-2 md:ml-0'>DeshiHat</h2>
                     </div>
 
                     {/* Navigation Links */}

@@ -34,12 +34,11 @@ export default async function Sidebar() {
     return (
         <Drawer direction='left'>
             <DrawerTrigger>
-                <div
+                <span
                     className='md:hidden hover:text-primary transition-colors'
-                    aria-label="Open Menu"
                 >
                     <Menu size={20} />
-                </div>
+                </span>
             </DrawerTrigger>
 
             <DrawerContent >
