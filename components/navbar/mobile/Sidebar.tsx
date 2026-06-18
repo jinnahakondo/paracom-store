@@ -33,22 +33,22 @@ export default async function Sidebar() {
 
     return (
         <Drawer direction='left'>
-            <DrawerTrigger asChild>
-                <button
+            <DrawerTrigger>
+                <div
                     className='md:hidden hover:text-primary transition-colors'
                     aria-label="Open Menu"
                 >
                     <Menu size={20} />
-                </button>
+                </div>
             </DrawerTrigger>
 
-            <DrawerContent className="top-0 right-0 left-auto mt-0 h-full w-full max-w-sm rounded-l-3xl rounded-r-none border-l bg-white p-0 flex flex-col justify-between">
+            <DrawerContent >
 
                 {/* Top Section */}
                 <div className="flex flex-col">
                     {/* Header */}
-                    <DrawerHeader>
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                    <DrawerHeader >
+                        <div className="flex items-center justify-between py-3 border-b border-gray-100 ">
                             <DrawerTitle className="text-xl font-bold text-gray-900">Menu</DrawerTitle>
                             <DrawerClose asChild>
                                 <button className="p-1 text-gray-500 hover:text-gray-900 transition-colors">
@@ -87,8 +87,8 @@ export default async function Sidebar() {
                         session ?
                             <LogOutButton />
                             :
-                            <NavLink className='text-primary' href='/login'> 
-                            Login
+                            <NavLink className='text-primary' href='/login'>
+                                Login
                             </NavLink>
                     }
                 </DrawerFooter>
