@@ -5,7 +5,6 @@ import { Types } from "mongoose";
 import { NextRequest } from "next/server";
 
 
-
 export async function GET(req: NextRequest) {
     try {
         const searchParams = req.nextUrl.searchParams
