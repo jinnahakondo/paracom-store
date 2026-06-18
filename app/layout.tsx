@@ -39,7 +39,7 @@ export default function RootLayout({
           <header>
             <Navbar />
           </header>
-          <main className="px-3 min-h-full flex flex-col">
+          <main className="px-3 min-h-full flex flex-col max-w-7xl mx-auto">
             {children}
             <Toaster />
           </main>

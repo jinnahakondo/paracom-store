@@ -35,7 +35,7 @@ export default async function Sidebar() {
         <Drawer direction='left'>
             <DrawerTrigger asChild>
                 <button
-                    className='md:hidden p-2 hover:text-primary transition-colors'
+                    className='md:hidden hover:text-primary transition-colors'
                     aria-label="Open Menu"
                 >
                     <Menu size={20} />

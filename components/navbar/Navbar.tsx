@@ -2,7 +2,7 @@ import React from 'react'
 import NavLink from './NavLink'
 import { Heart, User } from 'lucide-react'
 import SearchBar from './SearchBar'
-import Cart from './Cart'
+import Cart from '../cart/Cart'
 import Link from 'next/link'
 import Sidebar from './mobile/Sidebar'
 import { links } from './navLinks'
@@ -12,8 +12,8 @@ export default function Navbar() {
 
 
     return (
-        <div className='w-full h-20 bg-background border-b border-border px-6'>
-            <div className='h-full w-full flex justify-between items-center mx-auto max-w-7xl gap-4'>
+        <div className='w-full h-20 bg-background border-b border-border '>
+            <div className='h-full w-full flex justify-between items-center mx-auto max-w-7xl gap-4 px-3'>
 
                 {/* Left Side: Logo & Navigation */}
                 <div className='flex items-center gap-10'>
