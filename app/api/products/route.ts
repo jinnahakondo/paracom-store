@@ -1,3 +1,4 @@
+import { verifyRole } from "@/lib/auth/verifyAuth";
 import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
 import Category from "@/schemas/category.schema";
@@ -82,13 +83,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+        await connectDb()
+
+        await verifyRole("admin")
+
         const payload = await req.json()
+
         const result = await Product.create(payload)
+        
         return response.success({
             message: "Product created successfully",
             data: result
         })
-        
+
     } catch (error: any) {
         return response.error({
             message: "Failed to create product",
