@@ -75,3 +75,31 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
         })
     }
 }
+
+export async function DELETE(req: NextRequest, { params }: IParams) {
+    try {
+        await connectDb()
+        await verifyRole('admin')
+
+        const { slug } = await params;
+
+        const result = await Product.findOneAndDelete({ slug });
+
+        if (!result) {
+            return response.error({
+                message: "Product not found",
+                status: 404,
+            });
+        }
+
+        return response.success({
+            message: "Product deleted successfull"
+        })
+
+    } catch (error: any) {
+        return response.error({
+            message: "Failed to delete product",
+            error: error.message
+        })
+    }
+}
