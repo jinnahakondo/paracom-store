@@ -12,9 +12,25 @@ export async function GET(req: NextRequest) {
         const searchParams = req.nextUrl.searchParams
 
         const search = searchParams.get('search');
+
         const slug = searchParams.getAll('category')
+
         const maxPrice = searchParams.get("max_price")
         const minPrice = searchParams.get("min_price")
+
+        const sort = searchParams.get("sort_by")
+
+        const sortOption: Record<string, 1 | -1> = {};
+
+        if (sort === "rating") {
+            sortOption.averageRating = -1
+        } else if (sort === "price_low_to_high") {
+            sortOption.price = 1
+        } else if (sort === "price_high_to_low") {
+            sortOption.price = -1
+        }
+
+
 
         const query: Record<string, unknown> = {}
         if (search) query.title = { $regex: search, $options: "i" }
@@ -33,7 +49,7 @@ export async function GET(req: NextRequest) {
             const category = await Category.find({ slug: { $in: slug } });
             if (category.length === 0) {
                 return response.error({
-                    message: "Category not found",
+                    message: `${slug.length === 1 ? "Category" : "Categories"} not found`,
                     status: 404
                 });
             }
@@ -43,7 +59,9 @@ export async function GET(req: NextRequest) {
             query.category = { $in: categoryIds };
         }
 
-        const products = await Product.find(query).populate('category')
+        const products = await Product.find(query)
+            .populate('category')
+            .sort(sortOption)
 
         return response.success({
             data: products,
