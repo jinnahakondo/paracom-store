@@ -10,15 +10,14 @@ export async function GET(req: NextRequest) {
         await connectDb()
 
         const searchParams = req.nextUrl.searchParams
-
         const search = searchParams.get('search');
-
         const slug = searchParams.getAll('category')
-
         const maxPrice = searchParams.get("max_price")
         const minPrice = searchParams.get("min_price")
-
         const sort = searchParams.get("sort_by")
+        const limit = Number(searchParams.get("limit")) || 20
+        const skip = Number(searchParams.get("skip")) || 0
+
 
         const sortOption: Record<string, 1 | -1> = {};
 
@@ -46,7 +45,7 @@ export async function GET(req: NextRequest) {
         }
 
         if (slug && slug.length > 0) {
-            const category = await Category.find({ slug: { $in: slug } });
+            const category = await Category.find({ slug: { $in: slug } }).lean();
             if (category.length === 0) {
                 return response.error({
                     message: `${slug.length === 1 ? "Category" : "Categories"} not found`,
@@ -62,6 +61,11 @@ export async function GET(req: NextRequest) {
         const products = await Product.find(query)
             .populate('category')
             .sort(sortOption)
+            .limit(limit)
+            .skip(skip)
+            .lean()
+            .exec()
+
 
         return response.success({
             data: products,
