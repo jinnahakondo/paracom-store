@@ -1,42 +1,46 @@
 import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
+import Category from "@/schemas/category.schema";
 import Product from "@/schemas/product.schema";
 import { NextRequest } from "next/server";
 
 
 export async function GET(req: NextRequest) {
     try {
+        await connectDb()
+
         const searchParams = req.nextUrl.searchParams
 
         const search = searchParams.get('search');
-        const category = searchParams.get('category')
+        const slug = searchParams.get('category')
         const maxPrice = searchParams.get("max_price")
         const minPrice = searchParams.get("min_price")
 
         const query: Record<string, unknown> = {}
-
         if (search) query.title = { $regex: search, $options: "i" }
-        if (category) query.category = { $regex: category, $options: 'i' }
 
-        if (minPrice || maxPrice) {
+        const min = minPrice ? Number(minPrice) : NaN;
+        const max = maxPrice ? Number(maxPrice) : NaN;
+
+        if (!isNaN(min) || !isNaN(max)) {
             query.price = {
-                ...(minPrice && { $gte: Number(minPrice) }),
-                ...(maxPrice && { $lte: Number(maxPrice) }),
+                ...(!isNaN(min) && { $gte: min }),
+                ...(!isNaN(max) && { $lte: max }),
+            };
+        }
+
+        if (slug) {
+            const category = await Category.findOne({ slug });
+            if (!category) {
+                return response.error({
+                    message: "Category not found",
+                    status: 404
+                });
             }
+            query.category = category._id;
         }
 
-        console.log(query);
-
-        await connectDb()
-
-        const products = await Product.find(query)
-
-        if (products.length === 0) {
-            return response.error({
-                message: "Products not found",
-                status: 404
-            })
-        }
+        const products = await Product.find(query).populate('category')
 
         return response.success({
             data: products,
@@ -53,27 +57,3 @@ export async function GET(req: NextRequest) {
     }
 }
 
-// export async function POST(req: NextRequest) {
-//     try {
-//         const product = await req.json()
-
-//         await connectDb()
-
-//         const res = await Product.insertOne(product)
-
-
-//         return response.success({
-//             data: res,
-//             message: "product added successfully"
-//         })
-
-//     } catch (error: any) {
-
-//         return response.error(
-//             {
-//                 message: "failed to create product",
-//                 error: error.message
-//             }
-//         )
-//     }
-// }
