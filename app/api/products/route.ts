@@ -29,8 +29,6 @@ export async function GET(req: NextRequest) {
             sortOption.price = -1
         }
 
-
-
         const query: Record<string, unknown> = {}
         if (search) query.title = { $regex: search, $options: "i" }
 
@@ -82,3 +80,19 @@ export async function GET(req: NextRequest) {
     }
 }
 
+export async function POST(req: NextRequest) {
+    try {
+        const payload = await req.json()
+        const result = await Product.create(payload)
+        return response.success({
+            message: "Product created successfully",
+            data: result
+        })
+        
+    } catch (error: any) {
+        return response.error({
+            message: "Failed to create product",
+            error: error.message
+        })
+    }
+}
