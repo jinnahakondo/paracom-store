@@ -1,29 +1,37 @@
-import { connectDb } from "@/lib/db/db";
-import { generateSlug, response } from "@/lib/helperFunction";
-import Product from "@/schemas/product.schema";
-import { NextRequest } from "next/server";
-import { verifyRole } from "@/lib/auth/verifyAuth";
+import { verifyAuth, verifyRole } from "@/lib/auth/verifyAuth"
+import { connectDb } from "@/lib/db/db"
+import { isValidId, response } from "@/lib/helperFunction"
+import Order from "@/schemas/order.schema"
+import { NextRequest } from "next/server"
 
 interface IParams {
-    params: Promise<{ slug: string }>
+    params: Promise<{ id: string }>
 }
 
 export async function GET(req: NextRequest, { params }: IParams) {
     try {
         await connectDb()
+        await verifyAuth()
 
-        const { slug } = await params
+        const { id } = await params
 
-        const result = await Product.findOne({ slug })
+        if (!isValidId(id)) {
+            return response.error({
+                message: "invalid user id",
+                status: 400,
+            });
+        }
+
+        const result = await Order.findOne({ id }).lean().exec()
 
         return response.success({
-            message: "Product fetched successfull",
+            message: "Order fetched successfull",
             data: result
         })
 
     } catch (error: any) {
         return response.error({
-            message: "Failed to fetch product",
+            message: "Failed to fetch order",
             error: error.message
         })
     }
@@ -34,35 +42,30 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
         await connectDb()
         await verifyRole("admin")
 
-        const { slug } = await params
+        const { id } = await params
 
         const payload = await req.json()
 
-        if (payload.title) {
-
-            payload.title = generateSlug(payload.title)
-        }
-
-        const result = await Product.findOneAndUpdate(
-            { slug },
+        const result = await Order.findOneAndUpdate(
+            { id },
             payload,
             { new: true, runValidators: true })
 
         if (!result) {
             return response.error({
-                message: "Product not found",
+                message: "Order not found",
                 status: 404
             })
         }
 
         return response.success({
-            message: "Product updated successfully",
+            message: "Order updated successfully",
             data: result
         })
 
     } catch (error: any) {
         return response.error({
-            message: 'Failed to update product',
+            message: 'Failed to update order',
             error: error.message
         })
     }
@@ -73,24 +76,24 @@ export async function DELETE(req: NextRequest, { params }: IParams) {
         await connectDb()
         await verifyRole('admin')
 
-        const { slug } = await params;
+        const { id } = await params;
 
-        const result = await Product.findOneAndDelete({ slug });
+        const result = await Order.findOneAndDelete({ id });
 
         if (!result) {
             return response.error({
-                message: "Product not found",
+                message: "Order not found",
                 status: 404,
             });
         }
 
         return response.success({
-            message: "Product deleted successfull"
+            message: "Order deleted successfull"
         })
 
     } catch (error: any) {
         return response.error({
-            message: "Failed to delete product",
+            message: "Failed to delete order",
             error: error.message
         })
     }

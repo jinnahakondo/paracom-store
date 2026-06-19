@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     } catch (error: any) {
         return response.error(
             {
-                message: "failed to fetch products",
+                message: "Failed to fetch products",
                 error: error.message,
             }
         )
