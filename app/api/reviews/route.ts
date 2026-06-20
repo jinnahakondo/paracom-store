@@ -4,6 +4,29 @@ import { response } from "@/lib/helperFunction"
 import Review from "@/schemas/review.schema"
 import { NextRequest } from "next/server"
 
+export async function GET() {
+    try {
+        await connectDb()
+        await verifyAuth()
+
+        const result = await Review.find().lean().exec()
+
+        return response.success({
+            data: result,
+            message: "Reviews fetched successfully"
+        })
+
+    } catch (error: any) {
+        return response.error(
+            {
+                message: "Failed to fetch orders",
+                error: error.message,
+            }
+        )
+    }
+}
+
+
 export async function POST(req: NextRequest) {
     try {
         await connectDb()
