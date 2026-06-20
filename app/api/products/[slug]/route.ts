@@ -14,7 +14,14 @@ export async function GET(req: NextRequest, { params }: IParams) {
 
         const { slug } = await params
 
-        const result = await Product.findOne({ slug })
+        const result = await Product.findOne({ slug }).lean().exec()
+
+        if (!result) {
+            return response.error({
+                message: "Product not found",
+                status: 404
+            })
+        }
 
         return response.success({
             message: "Product fetched successfull",
@@ -40,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
 
         if (payload.title) {
 
-            payload.title = generateSlug(payload.title)
+            payload.slug = generateSlug(payload.title)
         }
 
         const result = await Product.findOneAndUpdate(
