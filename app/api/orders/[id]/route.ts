@@ -24,6 +24,13 @@ export async function GET(req: NextRequest, { params }: IParams) {
 
         const result = await Order.findOne({ id }).lean().exec()
 
+        if (!result) {
+            return response.error({
+                message: "Order not found",
+                status: 404
+            })
+        }
+
         return response.success({
             message: "Order fetched successfull",
             data: result
