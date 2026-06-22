@@ -3,6 +3,7 @@ import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
 import Category from "@/schemas/category.schema";
 import Product from "@/schemas/product.schema";
+import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 
 
@@ -90,7 +91,9 @@ export async function POST(req: NextRequest) {
         const payload = await req.json()
 
         const result = await Product.create(payload)
-        
+
+        revalidatePath('/')
+
         return response.success({
             message: "Product created successfully",
             data: result
