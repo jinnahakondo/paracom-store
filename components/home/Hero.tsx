@@ -16,7 +16,7 @@ import Image from "next/image"
 
 export function Hero() {
     const plugin = React.useMemo(
-        () => Autoplay({ delay: 2000, stopOnInteraction: true }), []
+        () => Autoplay({ delay: 4000, stopOnInteraction: true }), []
     )
 
     const [api, setApi] = React.useState<CarouselApi>()
@@ -57,7 +57,7 @@ export function Hero() {
                     <CarouselItem key={index}>
                         <div className="p-1">
                             <Card className="p-0">
-                                <CardContent className="flex items-center justify-center w-full h-fit max-h-[50vh] p-0">
+                                <CardContent className="flex items-center justify-center w-full max-h-100 p-0 border">
                                     <Image
                                         priority={index === 0}
                                         src={slideImg} alt="hero image" height={400} width={300} className="w-full h-fit " />
@@ -70,6 +70,7 @@ export function Hero() {
             <div className="py-2 flex items-center justify-center gap-2">
                 {
                     [...Array(Slides.length)].map((a, i) => <div
+                        onClick={() => api?.scrollTo(i)}
                         key={i} className={`h-4 w-4 rounded-full border-2 ${current === i + 1 ? "border-primary" : "border-primary/20"}`}></div>)
                 }
             </div>
