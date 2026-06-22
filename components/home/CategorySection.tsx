@@ -33,12 +33,7 @@ export default async function CategorySection() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious
-                    className='left-0 '
-                    variant={'default'} />
-                <CarouselNext
-                    className='right-0'
-                    variant={"default"} />
+
             </Carousel>
         </div>
     )
