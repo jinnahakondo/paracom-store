@@ -26,7 +26,7 @@ export default function ProductCard({ product }: { product: Product }) {
     return (
         <Card key={product._id} className="relative mx-auto w-full pt-0 flex flex-col justify-between overflow-hidden group hover:shadow-md transition-shadow">
 
-            <Link href={`/products/${product.slug}`} className="block cursor-pointer flex-1">
+            <Link href={`/shop/${product.slug}`} className="block cursor-pointer flex-1">
                 {/* Added 'relative' here to position the badge over the image */}
                 <div className="relative">
 
