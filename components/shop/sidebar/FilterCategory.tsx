@@ -1,8 +1,8 @@
+import { Checkbox } from "@/components/ui/checkbox";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { categoryType } from "@/types/category";
 
-import { Checkbox } from '../ui/checkbox'
-import { categoryType } from '@/types/category'
-import { Field, FieldLabel } from '../ui/field';
-import { useState } from 'react';
+
 
 interface Props extends categoryType {
     isChecked: boolean

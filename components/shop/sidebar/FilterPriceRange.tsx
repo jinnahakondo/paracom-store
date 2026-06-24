@@ -1,5 +1,5 @@
+import { Slider } from "@/components/ui/slider"
 
-import { Slider } from '../ui/slider'
 
 interface Props {
     priceRange: number[]

@@ -57,7 +57,7 @@ export function Hero() {
                     <CarouselItem key={index}>
                         <div className="p-1">
                             <Card className="p-0">
-                                <CardContent className="flex items-center justify-center w-full max-h-100 p-0 border">
+                                <CardContent className="flex items-center justify-center w-full max-h-100 p-0 border aspect-video">
                                     <Image
                                         priority={index === 0}
                                         src={slideImg} alt="hero image" height={400} width={300} className="w-full h-fit " />

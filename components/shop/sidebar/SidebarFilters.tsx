@@ -4,12 +4,12 @@ import axiosInstance from "@/lib/axiosInstance"
 import { useQuery } from "@tanstack/react-query"
 import FilterCategory from "./FilterCategory"
 import { categoryType } from "@/types/category"
-import SidebarFiltersSkeleton from "./SidebarFilterSkeleton"
+import SidebarFiltersSkeleton from "../../skeleton/SidebarFilterSkeleton"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { FieldGroup } from "../ui/field"
+import { FieldGroup } from "../../ui/field"
 import FilterPriceRange from "./FilterPriceRange"
 import { useState } from "react"
-import { Button } from "../ui/button"
+import { Button } from "../../ui/button"
 
 
 const getCategories = async (): Promise<categoryType[]> => {
@@ -77,7 +77,10 @@ export default function SidebarFilters() {
             {
                 hasFilters && <Button
                     className="mb-2"
-                    onClick={() => router.push(pathname)}
+                    onClick={() => {
+                        setPriceRange([50, 2000])
+                        router.push(pathname)
+                    }}
                     variant={"destructive"}>Clear All Filters</Button>
             }
 
