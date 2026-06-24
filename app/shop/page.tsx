@@ -2,7 +2,7 @@
 import DynamicBreadcrumb, { BreadcrumbItemProps } from '@/components/shared/DynamicBreadcrumb'
 import Shop from '@/components/shop/ShopProducts'
 import SidebarFilters from '@/components/shop/sidebar/SidebarFilters'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 export default async function ShopPage({
     searchParams,
@@ -54,7 +54,9 @@ export default async function ShopPage({
                 <div className='sticky top-36 h-fit'>
                     <SidebarFilters />
                 </div>
-                <Shop products={products} total={total} />
+                <Suspense fallback={'loading...'}>
+                    <Shop products={products} total={total} />
+                </Suspense>
             </main>
             <div className='flex items-center justify-center mb-8'>  hello</div>
         </div>
