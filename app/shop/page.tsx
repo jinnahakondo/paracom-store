@@ -1,6 +1,6 @@
 
 import DynamicBreadcrumb, { BreadcrumbItemProps } from '@/components/shared/DynamicBreadcrumb'
-import Pagination from '@/components/shop/Pagination'
+
 import Shop from '@/components/shop/ShopProducts'
 import SidebarFilters from '@/components/shop/sidebar/SidebarFilters'
 import ProductCardSkeleton from '@/components/skeleton/ProductCardSekleton'
@@ -12,46 +12,13 @@ export default async function ShopPage({
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     const params = await searchParams
-    const sort = params.sort_by || ''
-    const category = params.category || ''
-    const min_price = params.min_price || ''
-    const max_price = params.max_price || ''
-    const page = params.page || 1
-
-
-    const urlParams = new URLSearchParams();
-
-    if (sort) urlParams.append("sort_by", String(sort));
-    if (min_price) urlParams.append("min_price", String(min_price));
-    if (max_price) urlParams.append("max_price", String(max_price));
-    if (page) urlParams.append("page", String(page))
-
-    if (category) {
-        if (Array.isArray(category)) {
-            category.forEach(c => urlParams.append("category", c))
-        } else {
-            urlParams.append("category", category)
-        }
-    }
-
-    const limit = 6
-    urlParams.append("limit", String(limit))
-
-
-    const res = await fetch(`${process.env.BASE_URL}/api/products?${urlParams.toString()}`)
-
-    if (!res.ok) {
-        throw new Error("failed to fetch data")
-    }
-    const { data: products, total } = await res.json()
 
     const breadcrumbItems: BreadcrumbItemProps[] = [
         { label: "Home", href: "/" },
         { label: "Shop" },
     ]
 
-    const totalPage = Math.ceil(total / limit)
-
+    // loading skeleton for products 
     const loadingProducts = <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 pb-16 gap-6">
         {
             [...Array(9)].map((_, i) => <ProductCardSkeleton key={i} />)
@@ -68,12 +35,10 @@ export default async function ShopPage({
                     <SidebarFilters />
                 </div>
                 <Suspense fallback={loadingProducts}>
-                    <Shop products={products} total={total} />
+                    <Shop params={params} />
                 </Suspense>
             </main>
-            <div className='flex items-center justify-center mb-8'>
-                <Pagination totalPage={totalPage} />
-            </div>
+           
         </div>
     )
 }
