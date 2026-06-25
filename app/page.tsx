@@ -12,13 +12,13 @@ export default async function Home() {
   return (
     <div className="w-full pb-16 space-y-16">
       <Hero />
-      <Suspense fallback={'loading...'}>
-        <CategorySection />
-      </Suspense>
-      <Suspense fallback={'loading...'}>
-        <PopularSection />
-      </Suspense>
-      {
+      {/* <Suspense fallback={'loading...'}> */}
+      <CategorySection />
+      {/* </Suspense> */}
+      {/* <Suspense fallback={'loading...'}> */}
+      <PopularSection />
+      {/* </Suspense> */}
+      {/* {
         cateWiseProducts.map(product => <Suspense key={product.categorySlug} fallback={'loading...'}>
           <CategoryWiseProducts
             key={product.categorySlug}
@@ -26,9 +26,16 @@ export default async function Home() {
             {product.title}
           </CategoryWiseProducts>
         </Suspense>)
+      } */}
+
+      {
+        cateWiseProducts.map(product => <CategoryWiseProducts
+          key={product.categorySlug}
+          categorySlug={product.categorySlug} >
+          {product.title}
+        </CategoryWiseProducts>
+        )
       }
-
-
 
     </div>
   )

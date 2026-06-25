@@ -5,12 +5,12 @@ export interface Product {
     description: string;
     images: string[];
     price: number;
-    discountPrice?: number; 
+    discountPrice?: number;
     stock: number;
     brand: string;
-    category: string; 
+    category: { name: string; slug: string },
     averageRating: number;
     totalReviews: number;
-    createdAt?: string; 
+    createdAt?: string;
     updatedAt?: string;
 }

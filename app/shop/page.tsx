@@ -54,9 +54,9 @@ export default async function ShopPage({
                 <div className='sticky top-36 h-fit'>
                     <SidebarFilters />
                 </div>
-                <Suspense fallback={'loading...'}>
-                    <Shop products={products} total={total} />
-                </Suspense>
+                {/* <Suspense fallback={'loading...'}> */}
+                <Shop products={products} total={total} />
+                {/* </Suspense> */}
             </main>
             <div className='flex items-center justify-center mb-8'>  hello</div>
         </div>

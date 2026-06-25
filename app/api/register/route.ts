@@ -1,13 +1,11 @@
-import { verifyAuth } from "@/lib/auth/verifyAuth";
+
 import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
 import User from "@/schemas/user.schema";
-import { NextResponse } from "next/server";
 
-export async function POST(req: Request, res: NextResponse) {
+export async function POST(req: Request) {
     try {
         await connectDb()
-        await verifyAuth()
 
         const payload = await req.json()
         if (!payload.password) {
