@@ -6,8 +6,6 @@ import Title from '../shared/SectionTitle'
 import { categoryType } from '@/types/category'
 import Link from 'next/link'
 
-
-
 export default async function CategorySection() {
     const res = await fetch(`${process.env.BASE_URL}/api/categories`)
     if (!res.ok) {

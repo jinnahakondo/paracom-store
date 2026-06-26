@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 import Image from "next/image"
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
+import SliderPagination from "./SliderPagination"
 
 
 export function Hero() {
@@ -35,8 +36,6 @@ export function Hero() {
         }
     }, [api])
 
-    console.log({ count, current, });
-
     const plugin = React.useMemo(() => Autoplay(
         {
             delay: 2000,
@@ -50,6 +49,7 @@ export function Hero() {
         <Carousel
             setApi={setApi}
             plugins={[plugin]}
+            className="relative"
         >
             <CarouselContent>
                 {Slides.map((slideImg, index) => (
@@ -69,6 +69,9 @@ export function Hero() {
             </CarouselContent>
             <CarouselPrevious className="left-0" />
             <CarouselNext className="right-0" />
+            <div className="absolute bottom-10 right-1/2 -translate-x-1/2">
+                <SliderPagination count={count} current={current} />
+            </div>
         </Carousel>
 
     )
