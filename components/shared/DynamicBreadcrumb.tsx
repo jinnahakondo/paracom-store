@@ -8,11 +8,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { BreadcrumbItemProps } from "@/data/breadcrumbData"
 
-export interface BreadcrumbItemProps {
-  label: string
-  href?: string 
-}
+
 
 interface DynamicBreadcrumbProps {
   items: BreadcrumbItemProps[]
@@ -22,7 +20,7 @@ export default function DynamicBreadcrumb({ items }: DynamicBreadcrumbProps) {
   if (!items || items.length === 0) return null
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="mb-5">
       <BreadcrumbList>
         {items.map((item, index) => {
           const isLast = index === items.length - 1
@@ -40,7 +38,7 @@ export default function DynamicBreadcrumb({ items }: DynamicBreadcrumbProps) {
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
-              
+
               {/* Add Separator if it's not the last element */}
               {!isLast && <BreadcrumbSeparator />}
             </Fragment>
