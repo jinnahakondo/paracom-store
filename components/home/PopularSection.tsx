@@ -1,10 +1,10 @@
 import React from 'react'
 import Title from '../shared/SectionTitle'
 import ProductCard from '../ProductCard'
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 
 interface ApiResponse {
-    data: Product[];
+    data: ProductType[];
 }
 
 

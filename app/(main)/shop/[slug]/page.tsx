@@ -1,11 +1,12 @@
 import DynamicBreadcrumb from '@/components/shared/DynamicBreadcrumb'
 import ImageGallery from '@/components/shop/ImageGallery'
 import ProductDescriptionReviewsTab from '@/components/shop/ProductDescription&ReviewsTab'
+import RelatedProducts from '@/components/shop/RelatedProducts'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { productDetailsBreadcrumbs } from '@/data/breadcrumbData'
-import { Product } from '@/types/Product'
+import {  ProductType } from '@/types/Product'
 import { Award, Clock, ShieldCheck, ShoppingCart, Star } from 'lucide-react'
 import React, { Fragment } from 'react'
 
@@ -21,9 +22,8 @@ export default async function ProductDetails({ params }:
         throw new Error("failed to get data")
     }
 
-    const { data: product }: { data: Product } = await res.json()
+    const { data: product }: { data: ProductType } = await res.json()
 
-    console.log(product);
 
     const savings = product.discountPrice && product.price > product.discountPrice
         ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
@@ -142,9 +142,12 @@ export default async function ProductDetails({ params }:
 
                 </div>
             </div>
+            {/* product description & customer reviews  */}
             <div className="py-10">
                 <ProductDescriptionReviewsTab description={product.description} />
             </div>
+            {/* related products  */}
+            <RelatedProducts categoryId={product.category} />
         </div>
     )
 

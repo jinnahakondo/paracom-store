@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
         const totalProducts = await Product.countDocuments(query)
 
         const products = await Product.find(query)
-            .populate('category', "name")
+            .populate('category', "name -_id")
             .sort(sortOption)
             .limit(limit)
             .skip(skip)

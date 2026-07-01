@@ -1,7 +1,7 @@
 import React from 'react'
 import ShopHeader from './ShopHeader'
 import ProductCard from '../ProductCard'
-import { Product } from '@/types/Product'
+import { ProductType } from '@/types/Product'
 import Pagination from './Pagination'
 
 interface Props {
@@ -53,7 +53,7 @@ export default async function Shop({ params }: Props) {
       <ShopHeader totalProducts={String(total)} />
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
         {
-          products.map((product: Product) => <ProductCard key={product._id} product={product} />)
+          products.map((product: ProductType) => <ProductCard key={product._id} product={product} />)
         }
       </div>
       <div className='flex items-center justify-center mt-8'>

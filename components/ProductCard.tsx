@@ -6,10 +6,10 @@ import Image from 'next/image'
 import { FaBangladeshiTakaSign } from 'react-icons/fa6'
 import { Button } from './ui/button'
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa'
-import { Product } from '@/types/Product'
+import { ProductType } from '@/types/Product'
 
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product }: { product: ProductType }) {
     const renderStars = (rating: number) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
