@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { productDetailsBreadcrumbs } from '@/data/breadcrumbData'
-import { ProductType } from '@/types/types'
+import { getSingleProduct } from '@/lib/fetchData'
 import { Award, Clock, ShieldCheck, ShoppingCart, Star } from 'lucide-react'
 import React, { Fragment } from 'react'
 
@@ -14,16 +14,7 @@ export default async function ProductDetails({ params }:
     { params: Promise<{ slug: string }> }) {
     const { slug } = await params
 
-    const url = `${process.env.BASE_URL}/api/products/${slug}`
-
-    const res = await fetch(url)
-
-    if (!res.ok) {
-        throw new Error("failed to get data")
-    }
-
-    const { data: product }: { data: ProductType } = await res.json()
-
+    const product = await getSingleProduct(slug)
 
     const savings = product.discountPrice && product.price > product.discountPrice
         ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
