@@ -6,13 +6,11 @@ import Title from '../shared/SectionTitle'
 
 import Link from 'next/link'
 import { CategoryType } from '@/types/types'
+import { getAllCategories } from '@/lib/fetchData'
 
 export default async function CategorySection() {
-    const res = await fetch(`${process.env.BASE_URL}/api/categories`)
-    if (!res.ok) {
-        throw new Error("failed to fetch data")
-    }
-    const { data: categories } = await res.json()
+
+    const categories = await getAllCategories()
 
     return (
         <div>

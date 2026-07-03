@@ -3,6 +3,7 @@ import ShopHeader from './ShopHeader'
 import ProductCard from '../ProductCard'
 import { CategoryType, ProductType } from '@/types/types'
 import Pagination from './Pagination'
+import { getAllProducts } from '@/lib/fetchData'
 
 interface Props {
   params: {
@@ -38,14 +39,7 @@ export default async function Shop({ params }: Props) {
 
   urlParams.append("limit", String(limit))
 
-
-  const res = await fetch(`${process.env.BASE_URL}/api/products?${urlParams.toString()}`)
-
-  if (!res.ok) {
-    throw new Error("failed to fetch data")
-  }
-  const { data: products, total }: { data: ProductType<CategoryType>[], total: number } = await res.json()
-
+  const { products, total } = await getAllProducts(String(urlParams))
 
   const totalPage = Math.ceil(total / limit)
 

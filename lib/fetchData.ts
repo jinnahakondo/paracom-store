@@ -23,3 +23,48 @@ export const getSingleProduct = async (
         throw new Error("Failed to get product");
     }
 };
+
+
+export const getAllProducts = async (urlParams: string) => {
+    try {
+        const url = `${process.env.BASE_URL}/api/products?${urlParams}`
+        const res = await fetch(url)
+
+        if (!res.ok) {
+            throw new Error("failed to fetch products")
+        }
+
+        const { data: products, total }: { data: ProductType<CategoryType>[], total: number } = await res.json()
+
+        return { products, total }
+    } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+            console.error(error);
+        }
+
+        throw new Error("Failed to get products");
+    }
+}
+
+
+export const getAllCategories = async () => {
+    try {
+        const url = `${process.env.BASE_URL}/api/categories`
+        const res = await fetch(url)
+
+        if (!res.ok) {
+            throw new Error("failed to fetch categories")
+        }
+
+        const { data }: { data: CategoryType[] } = await res.json()
+
+        return data
+
+    } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+            console.error(error);
+        }
+
+        throw new Error("Failed to get categories");
+    }
+}
