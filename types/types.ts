@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export type UserType = {
   _id: string;
   name: string;
@@ -36,6 +38,18 @@ export interface ProductType<TCategory = string> {
 
   createdAt: string;
   updatedAt: string;
+}
+
+interface CartItem {
+  product: Types.ObjectId;
+  quantity: number;
+}
+
+export interface CartType {
+  user: Types.ObjectId;
+  items: CartItem[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface ReviewType<

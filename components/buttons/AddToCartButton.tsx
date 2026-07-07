@@ -17,29 +17,33 @@ interface CartResponse {
     message: string;
 }
 
-export default function AddToCartButton({ productId }: { productId: string }) {
+interface Props {
+    productId?: string,
+}
+
+export default function AddToCartButton({ productId }: Props) {
 
     const { data, status } = useSession()
 
     const router = useRouter()
 
-    const { mutateAsync: addToCart, isPending } = useMutation<
-        CartResponse,
-        Error,
-        AddToCartPayload
-    >({
-        mutationKey: ["add_product_to_cart"],
-        mutationFn: async (payload) => {
-            const res = await axiosInstance.post<CartResponse>("/api/cart", payload);
-            return res.data;
-        },
-        onSuccess: (data) => {
-            console.log("added product to cart", data);
-        },
-        onError: (error) => {
-            console.log(error);
-        }
-    });
+    // const { mutateAsync: addToCart, isPending } = useMutation<
+    //     CartResponse,
+    //     Error,
+    //     AddToCartPayload
+    // >({
+    //     mutationKey: ["add_product_to_cart"],
+    //     mutationFn: async (payload) => {
+    //         const res = await axiosInstance.post<CartResponse>("/api/cart", payload);
+    //         return res.data;
+    //     },
+    //     onSuccess: (data) => {
+    //         console.log("added product to cart", data);
+    //     },
+    //     onError: (error) => {
+    //         console.log(error);
+    //     }
+    // });
 
 
     const payload = { user: String(data?.user.id), product: productId }
@@ -53,11 +57,11 @@ export default function AddToCartButton({ productId }: { productId: string }) {
                 if (status === "unauthenticated") {
                     return router.push('/login')
                 }
-                addToCart(payload)
+                // addToCart(payload)
             }}
-            disabled={isPending}
-            size="lg" className="cursor-pointer">
-            <ShoppingCart className="h-4 w-4" />
+            // disabled={isPending}
+            size="lg" className={` cursor-pointer`}>
+            <ShoppingCart className="h-4 w-4 flex justify-center items-center gap-1" /> <span>Add to Cart</span>
         </Button>
     )
 }

@@ -68,7 +68,7 @@ export default function ProductCard({ product }: { product: ProductType<Category
 
             <CardFooter>
                 <div className='flex justify-between items-center w-full'>
-                    <div className='flex items-baseline gap-2'>
+                    <div className='flex-1 flex items-baseline gap-2'>
                         <p className='flex items-center font-bold text-lg text-primary'>
                             <FaBangladeshiTakaSign className="text-sm mr-0.5" />
                             {product.discountPrice || product.price}
@@ -80,7 +80,7 @@ export default function ProductCard({ product }: { product: ProductType<Category
                             </p>
                         )}
                     </div>
-                    <AddToCartButton productId={product._id}/>
+                    <AddToCartButton productId={product._id} />
                 </div>
             </CardFooter>
         </Card>

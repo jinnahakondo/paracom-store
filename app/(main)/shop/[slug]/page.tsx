@@ -114,11 +114,14 @@ export default async function ProductDetails({ params }:
                                 <p>Quantity</p>
                                 <QuantityButton />
                             </div>
-                            <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <AddToCartButton />
 
                                 <Button size="lg" variant="secondary" className="flex-1 font-medium cursor-pointer">
-                                    <Link href={`/checkout`}>Buy Now</Link>
+                                    <Link
+                                        href={`/checkout`}
+                                        className='w-full'
+                                    >Buy Now</Link>
                                 </Button>
 
                             </div>
