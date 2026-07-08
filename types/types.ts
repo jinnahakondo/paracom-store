@@ -40,14 +40,17 @@ export interface ProductType<TCategory = string> {
   updatedAt: string;
 }
 
-interface CartItem {
-  product: Types.ObjectId;
+
+export interface CartItemType<TItem = string> {
+  _id: Types.ObjectId;
+  product: TItem;
   quantity: number;
 }
 
+
 export interface CartType {
   user: Types.ObjectId;
-  items: CartItem[];
+  items: CartItemType[];
   createdAt?: Date;
   updatedAt?: Date;
 }

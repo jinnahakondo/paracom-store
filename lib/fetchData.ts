@@ -1,4 +1,4 @@
-import { CategoryType, ProductType } from "@/types/types";
+import { CartType, CategoryType, ProductType } from "@/types/types";
 
 export const getSingleProduct = async (
     slug: string
@@ -89,5 +89,26 @@ export const getCategoryWiseProduct = async (categorySlug: string) => {
         }
 
         throw new Error("Failed to get category wise product");
+    }
+}
+
+export const getCartData = async () => {
+    const url = `http://localhost:3000/api/cart`
+    try {
+        const res = await fetch(url)
+
+        if (!res.ok) {
+            throw new Error("failed to fetch cart data")
+        }
+
+        const { data }: { data: CartType[] } = await res.json();
+        return data;
+
+    } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+            console.error(error);
+        }
+
+        throw new Error("Failed to get cart data");
     }
 }
