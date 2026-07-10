@@ -4,13 +4,29 @@ import Image from "next/image";
 import { Minus, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItemType, ProductType } from "@/types/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCartItem } from "@/lib/fetchData";
 
 interface CartItemProps {
-    item: CartItemType<ProductType>
+    item: CartItemType<ProductType>;
 }
 
 export function CartItem({ item }: CartItemProps) {
     const totalPrice = item.product.price * item.quantity;
+
+    const queryClient = useQueryClient()
+
+    const { mutate: deleteItem, isPending,  } = useMutation({
+        mutationKey: ['delete-cart-item', item._id],
+        mutationFn: deleteCartItem,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart-data'] })
+        }
+    })
+
+    if (isPending) {
+        return <div className="flex items-center justify-center">loading...</div>
+    }
 
     return (
         <div className="flex items-center gap-4 rounded-xl border bg-card p-2 shadow-sm max-w-md w-full relative group">
@@ -65,7 +81,7 @@ export function CartItem({ item }: CartItemProps) {
 
             {/* Remove Button */}
             <Button
-                onClick={() => console.log(item._id)}
+                onClick={() => deleteItem(String(item._id))}
                 variant="ghost"
                 size="icon"
                 className=" h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"

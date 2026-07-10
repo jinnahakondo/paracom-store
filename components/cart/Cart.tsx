@@ -45,7 +45,7 @@ export default function Cart() {
                 {
                     isLoading ? "loaidng..."
                         :
-                        <div className="space-y-4 mt-4">
+                        <div className="space-y-4 mt-4 overflow-y-auto">
                             {items.map((item: CartItemType<ProductType>) => <CartItem
                                 key={item.product._id}
                                 item={item}

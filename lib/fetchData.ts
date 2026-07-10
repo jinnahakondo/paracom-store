@@ -1,4 +1,4 @@
-import { CartType, CategoryType, ProductType } from "@/types/types";
+import { CategoryType, ProductType } from "@/types/types";
 import axiosInstance from "./axiosInstance";
 
 export const getSingleProduct = async (
@@ -103,4 +103,10 @@ export const getCartData = async () => {
 export const addToCart = async (productId: string) => {
     const res = await axiosInstance.post("/api/cart", { productId });
     return res.data
+}
+
+export const deleteCartItem = async (itemId: string) => {
+    const res = await axiosInstance.patch(`/api/cart/${itemId}`);
+    return res.data
+
 }
