@@ -65,6 +65,7 @@ export function CartItem({ item }: CartItemProps) {
 
             {/* Remove Button */}
             <Button
+                onClick={() => console.log(item._id)}
                 variant="ghost"
                 size="icon"
                 className=" h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"

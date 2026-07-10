@@ -1,4 +1,5 @@
 import { CartType, CategoryType, ProductType } from "@/types/types";
+import axiosInstance from "./axiosInstance";
 
 export const getSingleProduct = async (
     slug: string
@@ -92,23 +93,14 @@ export const getCategoryWiseProduct = async (categorySlug: string) => {
     }
 }
 
+
+// client api 
 export const getCartData = async () => {
-    const url = `http://localhost:3000/api/cart`
-    try {
-        const res = await fetch(url)
+    const res = await axiosInstance.get("/api/cart")
+    return res.data
+}
 
-        if (!res.ok) {
-            throw new Error("failed to fetch cart data")
-        }
-
-        const { data }: { data: CartType[] } = await res.json();
-        return data;
-
-    } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-            console.error(error);
-        }
-
-        throw new Error("Failed to get cart data");
-    }
+export const addToCart = async (productId: string) => {
+    const res = await axiosInstance.post("/api/cart", { productId });
+    return res.data
 }

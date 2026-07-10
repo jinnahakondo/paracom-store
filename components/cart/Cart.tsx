@@ -4,14 +4,10 @@ import { BsCartX } from "react-icons/bs";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../ui/drawer'
 import CartButton from '../buttons/CartButton';
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/lib/axiosInstance";
 import { CartItem } from "./CartItem";
 import { CartItemType, ProductType } from "@/types/types";
+import { getCartData } from "@/lib/fetchData";
 
-const getCartData = async () => {
-    const res = await axiosInstance.get("/api/cart")
-    return res.data
-}
 
 export default function Cart() {
     const { data, isLoading } = useQuery({
@@ -20,12 +16,11 @@ export default function Cart() {
     })
 
     const items = data?.data?.items || [];
-    console.log("items", items);
 
     return (
         <Drawer direction='right'>
             <DrawerTrigger>
-                <CartButton />
+                <CartButton totalItems={items.length} />
             </DrawerTrigger>
             <DrawerContent className='px-4 py-3'>
                 <DrawerHeader className='border-b-2 border-border '>
