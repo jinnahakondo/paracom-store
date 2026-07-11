@@ -1,12 +1,13 @@
 "use client"
 import { BsCartX } from "react-icons/bs";
 
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../ui/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '../ui/drawer'
 import CartButton from '../buttons/CartButton';
 import { useQuery } from "@tanstack/react-query";
 import { CartItem } from "./CartItem";
 import { CartItemType, ProductType } from "@/types/types";
 import { getCartData } from "@/lib/fetchData";
+import { Button } from "../ui/button";
 
 
 export default function Cart() {
@@ -52,6 +53,16 @@ export default function Cart() {
                             />)}
                         </div>
                 }
+
+                <DrawerFooter>
+                    {
+                        items.length > 0
+                        &&
+                        <Button>Checkout</Button>
+                    }
+
+                </DrawerFooter>
+
             </DrawerContent>
         </Drawer>
     )

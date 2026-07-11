@@ -5,7 +5,7 @@ import { Minus, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItemType, ProductType } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCartItem } from "@/lib/fetchData";
+import { deleteCartItem, updateQuantity } from "@/lib/fetchData";
 import { CartItemSkeleton } from "../skeleton/CartItemSkeleton";
 
 interface CartItemProps {
@@ -25,7 +25,15 @@ export function CartItem({ item }: CartItemProps) {
         }
     })
 
-    if (isPending) {
+    const { mutate: updateQty, isPending: pendingUpdateQty } = useMutation({
+        mutationKey: ['update-quantity', item._id],
+        mutationFn: updateQuantity,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart-data'] })
+        }
+    })
+
+    if (isPending || pendingUpdateQty) {
         return <CartItemSkeleton />
     }
 
@@ -51,26 +59,35 @@ export function CartItem({ item }: CartItemProps) {
                 </h4>
 
                 {/* Pricing and Quantity Control */}
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5">
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5 w-fit">
                     {/* Quantity Counter */}
                     <div className="flex items-center border border-input rounded-full bg-background h-7 overflow-hidden">
                         <Button
+                            onClick={() => updateQty({
+                                itemId: String(item._id),
+                                value: -1
+                            })}
+                            disabled={item.quantity === 1}
                             variant="ghost"
                             size="icon"
                             className="h-full w-6 rounded-none text-muted-foreground hover:bg-muted"
 
                         >
-                            <Minus className="h-3 w-3" />
+                            <Minus size={12} />
                         </Button>
                         <span className="w-6 text-center text-xs font-medium text-foreground">
                             {item.quantity}
                         </span>
                         <Button
+                            onClick={() => updateQty({
+                                itemId: String(item._id),
+                                value: 1
+                            })}
                             variant="ghost"
                             size="icon"
                             className="h-full w-6 rounded-none text-muted-foreground hover:bg-muted"
                         >
-                            <Plus className="h-3 w-3" />
+                            <Plus size={12} />
                         </Button>
                     </div>
 

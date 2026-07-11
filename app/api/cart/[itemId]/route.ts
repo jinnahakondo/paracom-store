@@ -14,6 +14,39 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
         await connectDb()
 
         const { itemId } = await params;
+        const { value } = await req.json()
+
+        const { user } = await verifyAuth()
+
+        const result = await Cart.findOneAndUpdate(
+            {
+                user: user.id,
+                "items._id": itemId,
+            },
+            {
+                $inc: { "items.$.quantity": value }
+            },
+            { new: true }
+        );
+
+        return response.success({
+            message: 'quantity updated',
+            data: result
+        })
+
+    } catch (error: any) {
+        return response.error({
+            message: "failed to update quantity",
+            error: error.message
+        })
+    }
+}
+
+export async function DELETE(req: NextRequest, { params }: IParams) {
+    try {
+        await connectDb()
+
+        const { itemId } = await params;
 
         const { user } = await verifyAuth()
 
@@ -47,3 +80,5 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
         })
     }
 }
+
+

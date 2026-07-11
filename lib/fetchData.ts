@@ -100,13 +100,24 @@ export const getCartData = async () => {
     return res.data
 }
 
-export const addToCart = async (productId: string) => {
-    const res = await axiosInstance.post("/api/cart", { productId });
+export const addToCart = async ({ productId, quantity }:
+    { productId: string, quantity?: number }
+) => {
+    const res = await axiosInstance.post("/api/cart", { productId, quantity });
     return res.data
 }
 
 export const deleteCartItem = async (itemId: string) => {
-    const res = await axiosInstance.patch(`/api/cart/${itemId}`);
+    const res = await axiosInstance.delete(`/api/cart/${itemId}`);
     return res.data
 
+}
+
+export const updateQuantity = async ({ itemId, value }: {
+    itemId: string, value: number
+}) => {
+    const res = await axiosInstance.patch(`/api/cart/${itemId}`,
+        { value }
+    )
+    return res.data
 }

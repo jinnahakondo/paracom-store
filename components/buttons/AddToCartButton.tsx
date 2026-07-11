@@ -35,7 +35,7 @@ export default function AddToCartButton({ productId }: Props) {
             console.log(error);
         }
     })
-    
+
 
 
     return (
@@ -45,7 +45,7 @@ export default function AddToCartButton({ productId }: Props) {
                 if (status === "unauthenticated") {
                     return router.push(`/login?callbackUrl=${pathName}`)
                 }
-                mutate(String(productId))
+                mutate({ productId: String(productId) })
             }}
             disabled={isPending}
             size="lg" className={` cursor-pointer`}>

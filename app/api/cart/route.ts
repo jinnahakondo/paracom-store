@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         await connectDb()
         const { user } = await verifyAuth()
 
-        const { productId } = await req.json()
+        const { productId, quantity } = await req.json()
 
         let cart = await Cart.findOne({ user: user.id })
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         );
 
         if (existingItem) {
-            existingItem.quantity += 1
+            existingItem.quantity = quantity || existingItem.quantity + 1
         } else {
             cart.items.push({ product: productId, quantity: 1 })
         }
