@@ -15,6 +15,7 @@ import { DropdownMenuAvatar } from './DropdownMenuAvatar'
 export default function Navbar() {
 
     const { data: session, status } = useSession()
+    
 
     return (
         <div className='w-full h-20 bg-background border-b border-border '>

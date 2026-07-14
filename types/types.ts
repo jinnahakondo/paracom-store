@@ -49,7 +49,7 @@ export interface CartItemType<TItem = string> {
 
 
 export interface CartType {
-  user: Types.ObjectId;
+  user?: Types.ObjectId;
   items: CartItemType[];
   createdAt?: Date;
   updatedAt?: Date;

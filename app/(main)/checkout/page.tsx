@@ -1,7 +1,10 @@
-import OrderReviewCard from '@/components/checkout/OrderReviewCard'
-import OrderSummaryCard from '@/components/checkout/OrderSummaryCard'
-import ShippingBillingCard from '@/components/checkout/ShippingBillingCard'
-import React from 'react'
+
+import OrderReviewCard from "@/components/checkout/OrderReviewCard";
+import OrderSummaryCard from "@/components/checkout/OrderSummaryCard";
+import ShippingBillingCard from "@/components/checkout/ShippingBillingCard";
+
+
+
 
 export default function Checkout() {
     return (

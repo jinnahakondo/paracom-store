@@ -1,27 +1,23 @@
 "use client"
 import { BsCartX } from "react-icons/bs";
 
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '../ui/drawer'
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '../ui/drawer'
 import CartButton from '../buttons/CartButton';
-import { useQuery } from "@tanstack/react-query";
 import { CartItem } from "./CartItem";
-import { CartItemType, ProductType } from "@/types/types";
-import { getCartData } from "@/lib/fetchData";
 import { Button } from "../ui/button";
+import { CartItem as CartType, useCartStore } from "@/store/useCartStore";
+import { useRouter } from "next/navigation";
 
 
 export default function Cart() {
-    const { data, isLoading } = useQuery({
-        queryKey: ["cart-data"],
-        queryFn: getCartData
-    })
 
-    const items = data?.data?.items || [];
+    const cart = useCartStore(state => state.cartItems);
+    const router = useRouter()
 
     return (
         <Drawer direction='right'>
             <DrawerTrigger>
-                <CartButton totalItems={items.length} />
+                <CartButton totalItems={cart.length} />
             </DrawerTrigger>
             <DrawerContent className='px-4 py-3'>
                 <DrawerHeader className='border-b-2 border-border '>
@@ -34,7 +30,7 @@ export default function Cart() {
                 </DrawerHeader>
                 {/* empty cart  */}
                 {
-                    items.length === 0 &&
+                    cart.length === 0 &&
                     <div className='h-[calc(100vh-64px)] grid place-items-center justify-center'>
                         <div className='flex flex-col items-center gap-2'>
                             <BsCartX size={72} />
@@ -42,23 +38,31 @@ export default function Cart() {
                         </div>
                     </div>
                 }
-                {/* loading cart data */}
-                {
-                    isLoading ? "loaidng..."
-                        :
-                        <div className="space-y-4 mt-4 overflow-y-auto">
-                            {items.map((item: CartItemType<ProductType>) => <CartItem
-                                key={item.product._id}
-                                item={item}
-                            />)}
-                        </div>
-                }
+                {/* cart data */}
+
+                <div className="space-y-4 mt-4 overflow-y-auto">
+                    {cart.map((item: CartType) => <CartItem
+                        key={item._id}
+                        item={item}
+                    />)}
+                </div>
+
 
                 <DrawerFooter>
+
                     {
-                        items.length > 0
+                        cart.length > 0
                         &&
-                        <Button>Checkout</Button>
+                        <DrawerClose asChild>
+                            <Button
+                                onClick={() => {
+                                    useCartStore.getState().clearCheckOutItem();
+                                    router.push('/checkout')
+                                }}
+                                className="cursor-pointer">
+                                Checkout
+                            </Button>
+                        </DrawerClose>
                     }
 
                 </DrawerFooter>

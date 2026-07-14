@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Badge } from './ui/badge'
 import Image from 'next/image'
 import { FaBangladeshiTakaSign } from 'react-icons/fa6'
-import { Button } from './ui/button'
 import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa'
 import { CategoryType, ProductType } from '@/types/types'
 import AddToCartButton from './buttons/AddToCartButton'
@@ -80,7 +79,7 @@ export default function ProductCard({ product }: { product: ProductType<Category
                             </p>
                         )}
                     </div>
-                    <AddToCartButton productId={product._id} />
+                    <AddToCartButton product={product} />
                 </div>
             </CardFooter>
         </Card>

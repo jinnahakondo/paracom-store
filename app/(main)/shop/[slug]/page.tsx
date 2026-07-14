@@ -6,13 +6,11 @@ import ImageGallery from '@/components/shop/ImageGallery'
 import ProductDescriptionReviewsTab from '@/components/shop/ProductDescription&ReviewsTab'
 import RelatedProducts from '@/components/shop/RelatedProducts'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { productDetailsBreadcrumbs } from '@/data/breadcrumbData'
 import { getSingleProduct } from '@/lib/fetchData'
 import { Award, Clock, ShieldCheck, Star } from 'lucide-react'
-import Link from 'next/link'
-import React, { Fragment } from 'react'
+
 
 export default async function ProductDetails({ params }:
     { params: Promise<{ slug: string }> }) {
@@ -110,20 +108,15 @@ export default async function ProductDetails({ params }:
                         </Card>
 
                         <div className="space-y-3 pt-6 border-t">
-                            <div className='flex items-center gap-4'>
+                            {/* <div className='flex items-center gap-4'>
                                 <p>Quantity</p>
-                                <QuantityButton />
-                            </div>
+                                <QuantityButton productId={product._id} />
+                            </div> */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <AddToCartButton />
-
-                                <Button size="lg" variant="secondary" className="flex-1 font-medium cursor-pointer">
-                                    <Link
-                                        href={`/checkout`}
-                                        className='w-full'
-                                    >Buy Now</Link>
-                                </Button>
-
+                                <AddToCartButton product={product} />
+                                <BuyNowButton product={product}>
+                                    Buy Now
+                                </BuyNowButton>
                             </div>
 
                             <div className="text-center">

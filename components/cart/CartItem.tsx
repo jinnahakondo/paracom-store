@@ -3,49 +3,28 @@
 import Image from "next/image";
 import { Minus, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CartItemType, ProductType } from "@/types/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCartItem, updateQuantity } from "@/lib/fetchData";
-import { CartItemSkeleton } from "../skeleton/CartItemSkeleton";
+import { useCartStore } from "@/store/useCartStore";
+import { CartItem as CartItemType } from "@/store/useCartStore";
 
-interface CartItemProps {
-    item: CartItemType<ProductType>;
+interface ItemType {
+    item: CartItemType
 }
 
-export function CartItem({ item }: CartItemProps) {
-    const totalPrice = item.product.price * item.quantity;
 
-    const queryClient = useQueryClient()
+export function CartItem({ item }: ItemType) {
 
-    const { mutate: deleteItem, isPending, isSuccess } = useMutation({
-        mutationKey: ['delete-cart-item', item._id],
-        mutationFn: deleteCartItem,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['cart-data'] })
-        }
-    })
+    const removeCartItem = useCartStore(state => state.removeCartItem);
+    const updateQuantity = useCartStore(state => state.updateQuantity);
 
-    const { mutate: updateQty, isPending: pendingUpdateQty } = useMutation({
-        mutationKey: ['update-quantity', item._id],
-        mutationFn: updateQuantity,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['cart-data'] })
-        }
-    })
-
-    if (isPending || pendingUpdateQty) {
-        return <CartItemSkeleton />
-    }
-
-    if (isSuccess) return null
+    const totalPrice = Math.round(item.price * item.quantity)
 
     return (
         <div className="flex items-center gap-4 rounded-xl border bg-card p-2 shadow-sm max-w-md w-full relative group">
             {/* Product Image Wrapper */}
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border bg-muted p-1">
                 <Image
-                    src={item.product.images[0]}
-                    alt={item.product.title}
+                    src={item.image}
+                    alt={item.title}
                     fill
                     className="object-contain"
                     sizes="56px"
@@ -55,7 +34,7 @@ export function CartItem({ item }: CartItemProps) {
             {/* Content Area */}
             <div className="flex flex-col flex-1 min-w-0 gap-1.5">
                 <h4 className="text-sm font-medium text-card-foreground truncate pr-4">
-                    {item.product.title}
+                    {item.title}
                 </h4>
 
                 {/* Pricing and Quantity Control */}
@@ -63,10 +42,9 @@ export function CartItem({ item }: CartItemProps) {
                     {/* Quantity Counter */}
                     <div className="flex items-center border border-input rounded-full bg-background h-7 overflow-hidden">
                         <Button
-                            onClick={() => updateQty({
-                                itemId: String(item._id),
-                                value: -1
-                            })}
+                            onClick={() => updateQuantity(
+                                { productId: item._id, type: 'DECREMENT' }
+                            )}
                             disabled={item.quantity === 1}
                             variant="ghost"
                             size="icon"
@@ -79,10 +57,9 @@ export function CartItem({ item }: CartItemProps) {
                             {item.quantity}
                         </span>
                         <Button
-                            onClick={() => updateQty({
-                                itemId: String(item._id),
-                                value: 1
-                            })}
+                            onClick={() => updateQuantity(
+                                { productId: item._id, type: 'INCREMENT' }
+                            )}
                             variant="ghost"
                             size="icon"
                             className="h-full w-6 rounded-none text-muted-foreground hover:bg-muted"
@@ -93,15 +70,15 @@ export function CartItem({ item }: CartItemProps) {
 
                     {/* Math Layout */}
                     <span className="">×</span>
-                    <span className="font-medium text-foreground">৳{item.product.price.toFixed(2)}</span>
+                    <span className="font-medium text-foreground">৳{item.price}</span>
                     <span className="text-xs">=</span>
-                    <span className="font-semibold text-foreground">৳{totalPrice.toFixed(2)}</span>
+                    <span className="font-semibold text-foreground">৳{totalPrice}</span>
                 </div>
             </div>
 
             {/* Remove Button */}
             <Button
-                onClick={() => deleteItem(String(item._id))}
+                onClick={() => removeCartItem({ product: item })}
                 variant="ghost"
                 size="icon"
                 className=" h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
