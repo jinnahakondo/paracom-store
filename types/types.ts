@@ -42,15 +42,15 @@ export interface ProductType<TCategory = string> {
 
 
 export interface CartItemType<TItem = string> {
-  _id?: Types.ObjectId;
+  _id?: string;
   product: TItem;
   quantity: number;
 }
 
 
-export interface CartType<TItem = string> {
-  user?: Types.ObjectId;
-  items: CartItemType<TItem>[];
+export interface CartType {
+  user?: string;
+  items: CartItemType[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -60,15 +60,10 @@ export interface ReviewType<
   TProduct = string
 > {
   _id: string;
-
   user: TUser;
-
   product: TProduct;
-
   rating: number;
-
   comment: string;
-
   createdAt: string;
   updatedAt: string;
 }

@@ -2,9 +2,9 @@ import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { StateCreator } from "zustand";
 import { verifyAuth } from '@/lib/auth/verifyAuth';
-import { getCartData } from '@/lib/fetchData';
-import { CartItemType, CartType } from '@/types/types';
-import { Types } from 'mongoose';
+import { getCartData, mergeCartDb } from '@/lib/fetchData';
+import { CartType } from '@/types/types';
+
 
 
 export interface CartItem {
@@ -39,7 +39,7 @@ interface CartState {
     removeCartItem: ({ product, userId }: RemoveCartItem) => void;
     updateQuantity: ({ productId, quantity, userId, type }: UpdateQuantity) => void;
     clearCart: (userId?: string | null) => void;
-    // mergeCartWithDb: () => void;
+    mergeCartWithDb: (userId: string) => Promise<void>;
 }
 
 
@@ -91,28 +91,50 @@ const store: StateCreator<CartState> = (set, get) => ({
     clearCart: (userId) => {
         set({ cartItems: [] })
     },
-    // mergeCartWithDb: async () => {
-    //     const { user } = await verifyAuth();
-    //     if (!user) return;
+    mergeCartWithDb: async (userId) => {
+        if (!userId) return;
 
-    //     const localCart = get().cartItems;
-    //     const dbCart = await getCartData();
-    //     const mergedCart = [...new Set([...localCart, ...dbCart])];
+        const localCart = get().cartItems;
+        const { data } = await getCartData()
+        const dbCart = data || []
 
-    //     set({ cartItems: mergedCart });
+        console.log(dbCart);
 
-    //     const items = mergedCart.map(cart => ({
-    //         product: new Types.ObjectId(cart._id,),
-    //         quantity: Number(cart.quantity),
+        // maping local cart items and database cartItems without duplicate
+        const mergedMap = new Map();
 
-    //     }))
+        [...localCart, ...dbCart].forEach(item => {
+            const existing = mergedMap.get(item._id);
 
-    //     const finalCart: CartType<Types.ObjectId> = {
-    //         user: new Types.ObjectId(user.id),
-    //         items
-    //     }
+            if (existing) {
+                mergedMap.set(item._id, {
+                    ...item,
+                    quantity: existing.quantity + item.quantity
+                });
+            } else {
+                mergedMap.set(item._id, item);
+            }
+        })
 
-    // }
+        // making an arry with mergedMap values 
+        const mergedCart = Array.from(mergedMap.values())
+
+        set({ cartItems: mergedCart });
+
+        const items = mergedCart.map(cart => ({
+            product: cart._id,
+            quantity: Number(cart.quantity),
+
+        }))
+
+        const finalCart: CartType = {
+            user: userId,
+            items
+        }
+
+        await mergeCartDb(finalCart)
+
+    }
 })
 
 

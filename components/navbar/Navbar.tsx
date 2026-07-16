@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavLink from './NavLink'
 import { Heart, User } from 'lucide-react'
 import SearchBar from './SearchBar'
@@ -9,13 +9,21 @@ import Sidebar from './mobile/Sidebar'
 import { links } from './navLinks'
 import { useSession } from 'next-auth/react'
 import { DropdownMenuAvatar } from './DropdownMenuAvatar'
+import { useCartStore } from '@/store/useCartStore'
 
 
 
 export default function Navbar() {
 
     const { data: session, status } = useSession()
-    
+
+    const mergeCartWithDb = useCartStore(state => state.mergeCartWithDb)
+
+    useEffect(() => {
+        if (status === 'authenticated') {
+            mergeCartWithDb(session.user.id)
+        }
+    }, [status, session?.user.id, mergeCartWithDb])
 
     return (
         <div className='w-full h-20 bg-background border-b border-border '>

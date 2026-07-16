@@ -1,5 +1,6 @@
-import { CategoryType, ProductType } from "@/types/types";
+import { CartType, CategoryType, ProductType } from "@/types/types";
 import axiosInstance from "./axiosInstance";
+
 
 export const getSingleProduct = async (
     slug: string
@@ -82,7 +83,7 @@ export const getCategoryWiseProduct = async (categorySlug: string) => {
 
         const { data }: { data: ProductType[] } = await res.json()
 
-        return data
+        return data;
 
     } catch (error) {
         if (process.env.NODE_ENV === "development") {
@@ -120,4 +121,16 @@ export const updateQuantity = async ({ itemId, value }: {
         { value }
     )
     return res.data
+}
+
+export const mergeCartDb = async (cart: CartType) => {
+    const url = `${process.env.BASE_URL}/api/cart/merge`
+    const res = await fetch(url, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cart)
+    });
+    return res;
 }

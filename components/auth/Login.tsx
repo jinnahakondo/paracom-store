@@ -19,7 +19,6 @@ import Link from "next/link";
 import { signIn } from "next-auth/react"
 
 
-
 const loginSchema = baseSchema.pick({ email: true, password: true })
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -39,7 +38,7 @@ export default function Login() {
     },
   })
 
- 
+
 
   const onSubmit = async (data: LoginFormData) => {
 
