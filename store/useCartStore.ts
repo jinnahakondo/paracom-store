@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { StateCreator } from "zustand";
 import { CartItemType } from '@/types/types';
+import { addToCartDB } from '@/lib/fetchData';
 
 
 
@@ -46,6 +47,14 @@ const store: StateCreator<CartState> = (set, get) => ({
             [...currentItems, newItem];
 
         set({ cartItems: updatedItems })
+
+
+        // db update 
+        try {
+            await addToCartDB({ product: String(newItem._id), })
+        } catch (error) {
+            console.error(error);
+        }
     },
     removeCartItem: (itemId) => set(state => (
         {

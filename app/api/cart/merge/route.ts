@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
         const cartItems = items.map((item: ItemType) => ({
             user: new Types.ObjectId(user.id),
             product: new Types.ObjectId(item?.product),
-            quantity: item?.quantity
+            quantity: item?.quantity || 1
         }))
 
         await Cart.deleteMany({});

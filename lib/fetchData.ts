@@ -101,10 +101,10 @@ export const getCartData = async () => {
     return res.data
 }
 
-export const addToCart = async ({ productId, quantity }:
-    { productId: string, quantity?: number }
+export const addToCartDB = async ({ product, quantity }:
+    { product: string, quantity?: number }
 ) => {
-    const res = await axiosInstance.post("/api/cart", { productId, quantity });
+    const res = await axiosInstance.post("/api/cart", { product, quantity });
     return res.data
 }
 
