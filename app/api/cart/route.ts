@@ -3,7 +3,9 @@ import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
 import Cart from "@/schemas/cart.schema";
 import "@/schemas/product.schema";
+import { Types } from "mongoose";
 import { NextRequest } from "next/server";
+import { ItemType } from "./merge/route";
 
 
 
@@ -38,3 +40,4 @@ export async function GET() {
         })
     }
 }
+
