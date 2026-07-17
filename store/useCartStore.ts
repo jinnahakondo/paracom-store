@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { StateCreator } from "zustand";
 import { CartItemType } from '@/types/types';
-import { addToCartDB } from '@/lib/fetchData';
+import { addToCartDB, removeDBCartItem } from '@/lib/fetchData';
 
 
 
@@ -19,7 +19,7 @@ interface CartState {
     isLoading: boolean;
 
     addToCart: (newItem: CartItemType) => Promise<void>;
-    removeCartItem: (itemId: string) => void;
+    removeCartItem: (itemId: string) => Promise<void>;
     updateQuantity: ({ productId, quantity, userId, type }: UpdateQuantity) => void;
     clearCart: (userId?: string | null) => void;
     // mergeCartWithDb: () => Promise<void>;
@@ -56,11 +56,20 @@ const store: StateCreator<CartState> = (set, get) => ({
             console.error(error);
         }
     },
-    removeCartItem: (itemId) => set(state => (
-        {
-            cartItems: state.cartItems.filter(item => item._id !== itemId)
+    removeCartItem: async (itemId) => {
+        set(state => (
+            {
+                cartItems: state.cartItems.filter(item => item._id !== itemId)
+            }
+        ));
+
+        // remove item from db 
+        try {
+            await removeDBCartItem(itemId)
+        } catch (error) {
+            console.log(error);
         }
-    )),
+    },
     updateQuantity: ({ productId, quantity, userId, type }) => {
         const currentItems = get().cartItems;
 
