@@ -7,80 +7,34 @@ import { NextRequest } from "next/server";
 
 
 
-
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         await connectDb();
-        const { user } = await verifyAuth()
+        const { user } = await verifyAuth();
 
-        const cart = await Cart.findOne({
-            user: user.id,
-        }).populate("items.product", "title images price");
+        const result = await Cart.find({ user: user.id })
+            .populate("product", "title images price")
+            .exec();
+
+        const modifiedResult = result.map(item => (
+            {
+                _id: item?._id,
+                title: item?.product?.title,
+                image: item?.product?.images[0],
+                price: item?.product?.price,
+                quantity: item?.quantity,
+            }
+        ))
 
         return response.success({
-            message: "cart fetched",
-            data: cart
+            message: "cart data fetched",
+            data: modifiedResult
         })
 
     } catch (error: any) {
-        return response.error(
-            {
-                message: "Failed to fetch cart",
-                error: error.message
-            }
-        )
-    }
-}
-
-export async function POST(req: NextRequest) {
-    try {
-        await connectDb()
-        const { user } = await verifyAuth()
-
-        const { productId, quantity } = await req.json()
-
-        let cart = await Cart.findOne({ user: user.id })
-
-        if (!cart) {
-            cart = await Cart.create(
-                {
-                    user: user.id,
-                    items: [
-                        {
-                            product: productId
-                        }
-                    ]
-                }
-            )
-            return response.success({
-                message: "product added to cart",
-                data: cart
-            })
-        }
-
-        const existingItem = cart.items.find(
-            (item: any) => item.product.toString() === productId
-        );
-
-        if (existingItem) {
-            existingItem.quantity = quantity || existingItem.quantity + 1
-        } else {
-            cart.items.push({ product: productId, quantity: 1 })
-        }
-
-        await cart.save();
-
-        return response.success({
-            message: "product added to cart",
-            data: cart
+        return response.error({
+            message: "failed to fetch cart data",
+            error: error.message
         })
-
-    } catch (error: any) {
-        return response.error(
-            {
-                message: "Failed to add product to cart",
-                error: error.message
-            }
-        )
     }
 }
