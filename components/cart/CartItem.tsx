@@ -5,6 +5,7 @@ import { Minus, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import { CartItem as CartItemType } from "@/store/useCartStore";
+import { useSession } from "next-auth/react";
 
 interface ItemType {
     item: CartItemType
@@ -12,6 +13,8 @@ interface ItemType {
 
 
 export function CartItem({ item }: ItemType) {
+
+    const { status } = useSession()
 
     const removeCartItem = useCartStore(state => state.removeCartItem);
     const updateQuantity = useCartStore(state => state.updateQuantity);
@@ -78,7 +81,12 @@ export function CartItem({ item }: ItemType) {
 
             {/* Remove Button */}
             <Button
-                onClick={() => removeCartItem(item._id)}
+                onClick={() => removeCartItem(
+                    {
+                        status: status === 'authenticated',
+                        itemId: item?._id
+                    }
+                )}
                 variant="ghost"
                 size="icon"
                 className=" h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"

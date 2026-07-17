@@ -13,13 +13,23 @@ interface UpdateQuantity {
     type: 'INCREMENT' | 'DECREMENT' | 'QUANTITY'
 }
 
+interface AddToCart {
+    status: boolean,
+    newItem: CartItemType
+}
+
+interface IRemoveCartItem {
+    status: boolean,
+    itemId: string
+}
+
 
 interface CartState {
     cartItems: CartItemType[];
     isLoading: boolean;
 
-    addToCart: (newItem: CartItemType) => Promise<void>;
-    removeCartItem: (itemId: string) => Promise<void>;
+    addToCart: ({ status, newItem }: AddToCart) => Promise<void>;
+    removeCartItem: ({ status, itemId }: IRemoveCartItem) => Promise<void>;
     updateQuantity: ({ productId, quantity, userId, type }: UpdateQuantity) => void;
     clearCart: (userId?: string | null) => void;
     // mergeCartWithDb: () => Promise<void>;
@@ -32,7 +42,7 @@ const store: StateCreator<CartState> = (set, get) => ({
     isLoading: false,
 
 
-    addToCart: async (newItem) => {
+    addToCart: async ({ status, newItem }) => {
         const currentItems = get().cartItems;
 
         const existingItem = currentItems.find(item => item._id === newItem._id);
@@ -50,13 +60,15 @@ const store: StateCreator<CartState> = (set, get) => ({
 
 
         // db update 
-        try {
-            await addToCartDB({ product: String(newItem._id), })
-        } catch (error) {
-            console.error(error);
+        if (status) {
+            try {
+                await addToCartDB({ product: String(newItem._id), })
+            } catch (error) {
+                console.error(error);
+            }
         }
     },
-    removeCartItem: async (itemId) => {
+    removeCartItem: async ({ status, itemId }) => {
         set(state => (
             {
                 cartItems: state.cartItems.filter(item => item._id !== itemId)
@@ -64,10 +76,12 @@ const store: StateCreator<CartState> = (set, get) => ({
         ));
 
         // remove item from db 
-        try {
-            await removeDBCartItem(itemId)
-        } catch (error) {
-            console.log(error);
+        if (status) {
+            try {
+                await removeDBCartItem(itemId)
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
     updateQuantity: ({ productId, quantity, userId, type }) => {

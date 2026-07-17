@@ -5,6 +5,7 @@ import { ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCartStore } from '@/store/useCartStore'
 import { CartItemType, CategoryType, ProductType } from '@/types/types'
+import { useSession } from 'next-auth/react'
 
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 
 export default function AddToCartButton({ product }: Props) {
 
-
+    const { status } = useSession()
 
     const addToCart = useCartStore(state => state.addToCart)
 
@@ -29,7 +30,12 @@ export default function AddToCartButton({ product }: Props) {
     return (
         <Button
             onClick={() => {
-                addToCart(newCartItem)
+                addToCart(
+                    {
+                        newItem: newCartItem,
+                        status: status === 'authenticated'
+                    }
+                )
                 toast.success("Product added to cart")
             }}
             size="lg" className={` cursor-pointer`}>
