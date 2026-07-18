@@ -1,20 +1,20 @@
 "use client"
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import NavLink from './NavLink'
-import { Heart, User } from 'lucide-react'
-import SearchBar from './SearchBar'
+import { Heart, Search, User } from 'lucide-react'
 import Cart from '../cart/Cart'
 import Link from 'next/link'
 import Sidebar from './mobile/Sidebar'
 import { links } from './navLinks'
 import { useSession } from 'next-auth/react'
 import { DropdownMenuAvatar } from './DropdownMenuAvatar'
-import { useCartStore } from '@/store/useCartStore'
 import Logo from '../logo/Logo'
+import SearchBar from './SearchBar'
 
 
 
 export default function Navbar() {
+    const [open, setOpen] = React.useState(false)
 
     const { data: session, status } = useSession()
 
@@ -53,7 +53,11 @@ export default function Navbar() {
                 <div className='flex items-center md:gap-6'>
                     {/* Shadcn Input with Search Icon */}
                     <div className='hidden md:block max-w-64'>
-                        <SearchBar />
+
+                        <Search
+                            onClick={() => setOpen(true)}
+                            size={20} />
+                        <SearchBar open={open} setOpen={setOpen} />
                     </div>
                     {/* Action Buttons */}
                     <div className='flex items-center md:gap-4 text-foreground'>

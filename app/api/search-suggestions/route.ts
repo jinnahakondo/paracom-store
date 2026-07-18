@@ -5,12 +5,13 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        await connectDb()
+        await connectDb();
+
         const { search } = await req.json()
 
 
         const result = await Product.find({ title: { $regex: search, $options: "i" } })
-            .projection({ _id: 1, title: 1, images: 1, price: 1 })
+            .select('_id title images price');
 
 
         return response.success({

@@ -43,7 +43,8 @@ export function Hero() {
             stopOnMouseEnter: true
         }), [])
 
-    const Slides = ["/images/hero-beauty.png", "/images/hero-electronic.png", "/images/hero-grocery.png", '/images/hero-fitness.jpg']
+    const Slides = ["/images/hero-electronic.png", "/images/hero-grocery.png", '/images/hero-fitness.jpg']
+    // "/images/hero-beauty.png", 
 
     return (
         <Carousel
@@ -59,7 +60,7 @@ export function Hero() {
                                 <CardContent className="flex items-center justify-center w-full max-h-100 p-0 border aspect-video">
                                     <Image
                                         priority={index === 0}
-                                        src={slideImg} alt="hero image" height={400} width={300} className="w-full h-fit "
+                                        src={slideImg} alt="hero image" height={400} width={300} className="w-full h-full "
                                     />
                                 </CardContent>
                             </Card>

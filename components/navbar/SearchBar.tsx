@@ -1,16 +1,23 @@
-import { Search } from 'lucide-react'
-import React from 'react'
-import { Input } from '../ui/input'
 
-export default function SearchBar() {
+import React, { Dispatch, SetStateAction } from 'react'
+import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
+
+interface Props { open: boolean, setOpen: Dispatch<SetStateAction<boolean>> }
+
+export default function SearchBar({ open, setOpen }: Props) {
     return (
-        <div className='relative w-full'>
-            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-            <Input
-                type='text'
-                placeholder='Search AI hardware...'
-                className='pl-9 rounded-full bg-muted/50 border-input focus-visible:ring-1 focus-visible:ring-ring'
-            />
-        </div>
+        <CommandDialog
+            className='top-20'
+            open={open} onOpenChange={setOpen}>
+            <Command>
+                <CommandInput placeholder="Type a command or search..." />
+                <CommandList>
+                    <CommandEmpty>No result found</CommandEmpty>
+                    <CommandGroup heading="Suggestions">
+                        <CommandItem>Calendar</CommandItem>
+                    </CommandGroup>
+                </CommandList>
+            </Command>
+        </CommandDialog>
     )
 }

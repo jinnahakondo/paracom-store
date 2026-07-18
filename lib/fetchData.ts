@@ -101,6 +101,9 @@ export const getCategoryWiseProduct = async (categorySlug: string) => {
 
 
 // client api 
+
+// cart 
+
 export const getDBCartData = async () => {
     const res = await axiosInstance.get("/api/cart")
     return res.data
@@ -131,5 +134,12 @@ export const updateDBItemQty = async ({ itemId, quantity, type }: UpdateDBItemQt
 
 export const mergeDBCart = async (items: CartItemType[]) => {
     const res = await axiosInstance.post('/api/cart/merge', items)
+    return res.data;
+}
+
+// search suggesion 
+
+export const getSearchSuggesion = async (search: string) => {
+    const res = await axiosInstance.post('/search-suggestions', { search });
     return res.data;
 }
