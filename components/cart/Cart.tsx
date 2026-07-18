@@ -8,14 +8,15 @@ import { Button } from "../ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { CartItemType } from "@/types/types";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 
 
 export default function Cart() {
 
     const cart = useCartStore(state => state.cartItems);
-    // const totalPrice = cart.reduce((total, item) => {
-    //     return total + (Number(item.price) * Number(item.quantity))
-    // }, 0)
+    const totalPrice = cart.reduce((total, item) => {
+        return total + (Number(item.price) * Number(item.quantity))
+    }, 0)
 
     const router = useRouter()
 
@@ -53,7 +54,12 @@ export default function Cart() {
                 </div>
 
 
-                <DrawerFooter>
+                <DrawerFooter className="bg-accent">
+
+                    <div className="flex items-center justify-between">
+                        <h3 className="font-medium">Total:</h3>
+                        <p className="flex items-center font-bold"> <FaBangladeshiTakaSign /> {totalPrice}</p>
+                    </div>
 
                     {
                         cart.length > 0
