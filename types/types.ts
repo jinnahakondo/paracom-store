@@ -21,21 +21,14 @@ export interface ProductType<TCategory = string> {
   slug: string;
   description: string;
   images: string[];
-
   price: number;
   discountPrice?: number;
-
   stock: number;
-
   brand?: string;
-
   category: TCategory;
-
   averageRating: number;
   totalReviews: number;
-
   createdBy?: UserType;
-
   createdAt: string;
   updatedAt: string;
 }
