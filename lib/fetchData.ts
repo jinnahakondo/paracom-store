@@ -143,3 +143,15 @@ export const getSearchSuggesion = async (search: string) => {
     const res = await axiosInstance.post('/api/search-suggestions', { search });
     return res.data;
 }
+
+// payment 
+export const handleCheckout = async (
+  checkoutItems: CartItemType[]
+) => {
+  const res = await axiosInstance.post(
+    "/api/checkout/sessions",
+    { items: checkoutItems }
+  );
+
+  return res.data;
+};

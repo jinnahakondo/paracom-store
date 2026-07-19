@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { useCartStore } from "@/store/useCartStore";
+import { handleCheckout } from "@/lib/fetchData";
+
 
 export default function OrderSummaryCard() {
 
@@ -16,6 +18,17 @@ export default function OrderSummaryCard() {
         return total + (Number(item.price) * Number(item.quantity))
     }, 0)
 
+    const onCheckout = async () => {
+        try {
+            const data = await handleCheckout(cartItems);
+
+            if (data.url) {
+                window.location.href = data.url;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <Card className="w-full bg-card text-card-foreground border border-border shadow-md">
@@ -81,6 +94,7 @@ export default function OrderSummaryCard() {
                 {/* Call To Action Buttons */}
                 <div className="space-y-4 pt-2">
                     <Button
+                        onClick={onCheckout}
                         variant={'default'}
                         size="lg"
                         className="w-full"
