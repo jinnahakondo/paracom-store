@@ -59,3 +59,16 @@ export interface ReviewType<
   createdAt: string;
   updatedAt: string;
 }
+
+
+export interface SearchSuggestionItemType {
+  _id?: string;
+  title: string;
+  images: string[];
+  price: number;
+  category: {
+    name: string,
+    slug: string,
+  };
+  slug: string;
+}

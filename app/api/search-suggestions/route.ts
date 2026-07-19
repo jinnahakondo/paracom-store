@@ -9,9 +9,11 @@ export async function POST(req: NextRequest) {
 
         const { search } = await req.json()
 
+        console.log({ search });
 
         const result = await Product.find({ title: { $regex: search, $options: "i" } })
-            .select('_id title images price');
+            .populate('category', '-_id slug name')
+            .select('-_id title images price slug category');
 
 
         return response.success({

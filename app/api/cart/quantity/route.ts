@@ -9,7 +9,6 @@ export async function PATCH(req: NextRequest) {
         await connectDb();
         const { user } = await verifyAuth();
         const { product, quantity, type } = await req.json();
-        console.log("helllo");
 
         let updateQty;
         if (type === 'INCREMENT') {

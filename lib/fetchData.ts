@@ -140,6 +140,6 @@ export const mergeDBCart = async (items: CartItemType[]) => {
 // search suggesion 
 
 export const getSearchSuggesion = async (search: string) => {
-    const res = await axiosInstance.post('/search-suggestions', { search });
+    const res = await axiosInstance.post('/api/search-suggestions', { search });
     return res.data;
 }

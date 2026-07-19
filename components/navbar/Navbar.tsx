@@ -27,7 +27,7 @@ export default function Navbar() {
                 <div className='flex items-center gap-10'>
                     <div className='flex items-center justify-center '>
                         {/* Mobile Menu Button */}
-                        <Sidebar user={session?.user} />
+                        <Sidebar />
                         {/* Logo */}
                         <Logo />
                     </div>

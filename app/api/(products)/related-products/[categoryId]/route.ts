@@ -13,8 +13,6 @@ export async function GET(req: NextRequest, { params }: IParams) {
         await connectDb()
         const { categoryId } = await params
 
-        console.log(categoryId);
-
         const result = await Product.find({ category: categoryId })
             .limit(4)
             .lean()

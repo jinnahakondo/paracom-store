@@ -25,7 +25,7 @@ export default async function Home() {
   </div>
 
   return (
-    <div className="w-full pb-16 space-y-16">
+    <div className="w-full pb-16 space-y-16 pt-4">
       <Hero />
       <Suspense fallback={loadingCategories}>
         <CategorySection />

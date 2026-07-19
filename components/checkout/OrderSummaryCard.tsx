@@ -16,8 +16,6 @@ export default function OrderSummaryCard() {
         return total + (Number(item.price) * Number(item.quantity))
     }, 0)
 
-    console.log({ totalPrice });
-
 
     return (
         <Card className="w-full bg-card text-card-foreground border border-border shadow-md">

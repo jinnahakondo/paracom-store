@@ -17,8 +17,6 @@ export default async function RelatedProducts({ categoryId }: Props) {
     const url = `${process.env.BASE_URL}/api/related-products/${categoryId}`
     const res = await fetch(url)
 
-    console.log(url);
-
     if (!res.ok) {
         throw new Error("failed to fetch data")
     }

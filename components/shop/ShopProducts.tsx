@@ -15,14 +15,16 @@ const limit = 9
 
 export default async function Shop({ params }: Props) {
 
-  const sort = params.sort_by || ''
-  const category = params.category || ''
-  const min_price = params.min_price || ''
-  const max_price = params.max_price || ''
-  const page = params.page || 1
+  const search = params.search || '';
+  const sort = params.sort_by || '';
+  const category = params.category || '';
+  const min_price = params.min_price || '';
+  const max_price = params.max_price || '';
+  const page = params.page || 1;
 
   const urlParams = new URLSearchParams();
 
+  if (search) urlParams.append("search", String(search));
   if (sort) urlParams.append("sort_by", String(sort));
   if (min_price) urlParams.append("min_price", String(min_price));
   if (max_price) urlParams.append("max_price", String(max_price));

@@ -17,15 +17,12 @@ export async function POST(req: NextRequest) {
 
         const items = await req.json();
 
-        console.log(items);
-
         const cartItems = items.map((item: CartItemType) => ({
             user: user.id,
             product: item._id,
             quantity: item?.quantity || 1
         }))
 
-        console.log("cartItems", cartItems);
         await Cart.deleteMany({ user: user.id });
 
         const result = await Cart.insertMany(cartItems);

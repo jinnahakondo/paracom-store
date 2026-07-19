@@ -43,24 +43,26 @@ export function Hero() {
             stopOnMouseEnter: true
         }), [])
 
-    const Slides = ["/images/hero-electronic.png", "/images/hero-grocery.png", '/images/hero-fitness.jpg']
-    // "/images/hero-beauty.png", 
+    const Slides = ["/images/hero-beauty.png", "/images/hero-electronic.png", "/images/hero-grocery.png", '/images/hero-fitness.jpg']
+
 
     return (
         <Carousel
             setApi={setApi}
             plugins={[plugin]}
-            className="relative pt-16"
+            className="relative"
         >
             <CarouselContent>
                 {Slides.map((slideImg, index) => (
                     <CarouselItem key={index}>
                         <div className="p-1">
-                            <Card className="p-0">
-                                <CardContent className="flex items-center justify-center w-full max-h-100 p-0 border aspect-video">
+                            <Card className="overflow-hidden p-0">
+                                <CardContent className="relative flex items-center justify-center w-full h-fit max-h-100 p-0 border aspect-video">
                                     <Image
                                         priority={index === 0}
-                                        src={slideImg} alt="hero image" height={400} width={300} className="w-full h-full "
+                                        src={slideImg} alt="hero image"
+                                        fill
+                                        className="w-full h-full object-cover "
                                     />
                                 </CardContent>
                             </Card>

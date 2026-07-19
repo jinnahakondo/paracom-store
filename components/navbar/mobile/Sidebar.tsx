@@ -1,4 +1,4 @@
-
+"use client"
 import React from 'react'
 import {
     Drawer,
@@ -11,11 +11,13 @@ import { Heart, Menu, } from 'lucide-react'
 import { links } from '../navLinks';
 import NavLink from '../NavLink';
 import SearchBar from '../SearchBar';
+import { useSession } from 'next-auth/react';
 
 
 
-export default function Sidebar({ user }: { user: any }) {
-
+export default function Sidebar() {
+    const [open, setOpen] = React.useState(false)
+    const { data: session, status } = useSession()
 
     const mobileLinks = [
         {
@@ -47,7 +49,7 @@ export default function Sidebar({ user }: { user: any }) {
 
                     </DrawerHeader>
                     <div className='p-4'>
-                        <SearchBar />
+                        <SearchBar open={open} setOpen={setOpen} />
                     </div>
                     {/* Navigation Links */}
 
