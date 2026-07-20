@@ -47,7 +47,10 @@ const userSchema = new Schema<IUser>(
       type: String,
     },
     phone: String,
-    address: String
+    address: {
+      type:String,
+      ref:'Address'
+    }
   },
   { timestamps: true }
 );
