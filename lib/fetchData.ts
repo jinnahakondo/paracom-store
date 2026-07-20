@@ -144,7 +144,8 @@ export const getSearchSuggesion = async (search: string) => {
     return res.data;
 }
 
-// payment 
+// payment -----
+// checkout 
 export const handleCheckout = async (
   checkoutItems: CartItemType[]
 ) => {
@@ -155,3 +156,4 @@ export const handleCheckout = async (
 
   return res.data;
 };
+

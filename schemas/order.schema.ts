@@ -9,14 +9,14 @@ const orderSchema = new Schema(
 
     products: [
       {
-        product: {
+        productId: {
           type: Schema.Types.ObjectId,
           ref: "Product",
         },
 
         quantity: Number,
-
         price: Number,
+        subtotal: Number
       },
     ],
 
@@ -26,15 +26,20 @@ const orderSchema = new Schema(
 
     totalAmount: Number,
 
-    paymentMethod: {
-      type: String,
-      enum: ["cash", "card", "sslcommerz"],
-    },
+    payment: {
+      transactionId: String,
+      paymentMethod: {
+        type: String,
+        enum: ["cash", "card"],
+        default: 'card'
+      },
 
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "failed", "refunded"],
-      default: "pending",
+      paymentStatus: {
+        type: String,
+        enum: ["pending", "paid", "failed"],
+        default: "pending",
+      },
+
     },
 
     orderStatus: {
@@ -65,5 +70,5 @@ const orderSchema = new Schema(
   }
 );
 
-const Order = mongoose.models.Order || mongoose.model("Order",orderSchema)
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema)
 export default Order

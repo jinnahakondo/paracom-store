@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
         const line_items = items.map((item: CartItemType) => ({
             price_data: {
-                currency: "usd",
+                currency: "bdt",
                 product_data: {
                     name: item.title,
                     images: [item.image]
@@ -32,9 +32,22 @@ export async function POST(req: NextRequest) {
 
         // Create Checkout Sessions from body params.
         const session = await stripe.checkout.sessions.create({
-            line_items,
+            line_items: [
+                ...line_items,
+                {
+                    price_data: {
+                        currency: "bdt",
+                        product_data: {
+                            name: "Delivery Charge",
+                        },
+                        unit_amount: 50 * 100,
+                    },
+                    quantity: 1,
+                }
+            ],
             mode: 'payment',
             payment_method_types: ['card'],
+            customer_email: String(user.email),
             metadata: {
                 userId: String(user.id),
             },
@@ -48,6 +61,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error: any) {
+        console.log(error);
         return NextResponse.json(
             { error: error.message },
             { status: error.statusCode || 500 }

@@ -12,7 +12,7 @@ import { handleCheckout } from "@/lib/fetchData";
 
 export default function OrderSummaryCard() {
 
-    const deleveryFee = 40;
+    const deleveryFee = 50;
     const cartItems = useCartStore(state => state.cartItems);
     const totalPrice = cartItems.reduce((total, item) => {
         return total + (Number(item.price) * Number(item.quantity))
