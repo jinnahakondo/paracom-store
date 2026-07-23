@@ -144,16 +144,24 @@ export const getSearchSuggesion = async (search: string) => {
     return res.data;
 }
 
+//get saved addresses
+
+export const getSavedAddresses = async () => {
+    const res = await axiosInstance.get('/api/save-address');
+    return res.data;
+}
+
+
 // payment -----
 // checkout 
 export const handleCheckout = async (
-  checkoutItems: CartItemType[]
+    checkoutItems: CartItemType[]
 ) => {
-  const res = await axiosInstance.post(
-    "/api/checkout/sessions",
-    { items: checkoutItems }
-  );
+    const res = await axiosInstance.post(
+        "/api/checkout/sessions",
+        { items: checkoutItems }
+    );
 
-  return res.data;
+    return res.data;
 };
 

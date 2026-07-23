@@ -8,11 +8,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 
 import SavedAddressDialog from "./SavedAddressDialog";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { getSavedAddresses } from "@/lib/fetchData";
+import SavedAddressesSkeleton from "../skeleton/SavedAddressesSkeleton";
 
 
 
 export interface Address {
-  id: string;
+  _id: string;
   name: string;
   phone: string;
   division: string;
@@ -23,28 +27,25 @@ export interface Address {
   isDefault?: boolean;
 }
 
-const initialAddresses: Address[] = [
-  {
-    id: "1",
-    name: "MD Robiul Islam Jinnah",
-    phone: "1403703441",
-    division: "Rangpur",
-    district: "Gaibandha",
-    city: "Sadullapur",
-    postalCode: 5710,
-    address: "শাহানা ফিলিং স্টেশন, Sadullapur, Gaibandha, Rangpur",
-    isDefault: true,
-  },
-];
+
 
 export default function SavedAddressesClient() {
-  const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isAddressEditing, setIsAddressEditing] = useState<Address | null>(null);
 
+  const { status, data: session } = useSession()
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddressEditing, setIsAddressEditing] = useState(false);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['saved-addresses', session?.user.id],
+    queryFn: getSavedAddresses,
+  })
+
+  const savedAddresses = data?.data ?? [];
+
+  if (isLoading) return <SavedAddressesSkeleton />
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -63,7 +64,7 @@ export default function SavedAddressesClient() {
       </div>
 
       {/* Addresses Grid */}
-      {addresses.length === 0 ? (
+      {savedAddresses.length === 0 ? (
         <Card className="flex flex-col items-center justify-center p-8 text-center border-dashed">
           <MapPin className="h-10 w-10 text-muted-foreground mb-3" />
           <h3 className="text-base font-semibold">No saved addresses</h3>
@@ -76,7 +77,7 @@ export default function SavedAddressesClient() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {addresses.map((item) => (
+          {savedAddresses.map((item) => (
             <Card
               key={item.id}
               className={`relative flex flex-col justify-between transition-colors ${item.isDefault ? "border-primary/50 bg-primary/5" : ""
