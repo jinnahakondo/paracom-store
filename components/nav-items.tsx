@@ -20,7 +20,7 @@ export function NavItems({
   items,
 }: { items: IProps[] }) {
   const pathName = usePathname()
-  // const isActive = pathName === href || (href !== '/' && pathName.startsWith(href))
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -35,6 +35,7 @@ export function NavItems({
               <SidebarMenuButton
                 tooltip={item.title}
                 isActive={pathName.endsWith(item.url)}
+                className="py-0"
               >
                 <Link href={item.url}
                   className="flex-1 flex items-center gap-2">

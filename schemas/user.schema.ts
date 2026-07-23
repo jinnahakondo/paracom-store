@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 interface IUser extends Document {
@@ -9,7 +9,7 @@ interface IUser extends Document {
   image?: string;
   role: "user" | "admin";
   phone?: string;
-  address?: string;
+  address?: Types.ObjectId[];
   isModified(path: string): boolean;
 }
 
@@ -47,10 +47,12 @@ const userSchema = new Schema<IUser>(
       type: String,
     },
     phone: String,
-    address: {
-      type:String,
-      ref:'Address'
-    }
+    address: [
+      {
+        type: Types.ObjectId,
+        ref: "Address"
+      },
+    ]
   },
   { timestamps: true }
 );

@@ -7,8 +7,11 @@ import { Badge } from "@/components/ui/badge";
 interface ShippingAddress {
     name: string;
     phone: string;
-    type: "OFFICE" | "HOME" | string;
-    addressLine: string;
+    division: string;
+    district: string;
+    city: string;
+    postalCode: number;
+    address: string;
 }
 
 interface ShippingBillingCardProps {
@@ -20,8 +23,11 @@ interface ShippingBillingCardProps {
 const defaultAddress: ShippingAddress = {
     name: "MD Robiul Islam Jinnah",
     phone: "1403703441",
-    type: "OFFICE",
-    addressLine: "শাহানা ফিলিং স্টেশন, Sadullapur, Gaibandha, Rangpur",
+    division: "Rangpur",
+    district: "Gaibandha",
+    city: "Sadullapur",
+    postalCode: 5710,
+    address: "শাহানা ফিলিং স্টেশন, Sadullapur, Gaibandha, Rangpur",
 };
 
 export default function ShippingBillingCard({
@@ -29,7 +35,7 @@ export default function ShippingBillingCard({
     onEdit,
 }: ShippingBillingCardProps) {
     return (
-        <Card className="w-full bg-card text-card-foreground border border-border shadow-sm">
+        <Card className="w-full bg-card text-card-foreground  shadow-sm">
             <CardContent className=" space-y-6">
                 {/* Header Section */}
                 <div className="flex items-center justify-between">
@@ -67,10 +73,10 @@ export default function ShippingBillingCard({
                                 variant="default"
                                 className="bg-primary text-primary-foreground font-bold tracking-wider px-2.5 py-0.5 text-[10px] rounded-full shadow-none pointer-events-none"
                             >
-                                {address.type}
+                                {address.division}
                             </Badge>
                             <p className="text-muted-foreground font-medium text-sm md:text-base leading-relaxed">
-                                {address.addressLine}
+                                {address.address}
                             </p>
                         </div>
                     </div>
