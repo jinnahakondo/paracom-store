@@ -9,10 +9,17 @@ export async function POST(req: NextRequest) {
         await connectDb();
         const { user } = await verifyAuth();
         const address = await req.json();
+
+        const savedAddressCount = await Address.countDocuments({
+            user: user.id
+        })
+
         const newAddress = {
             user: user.id,
             ...address,
+            isDefault: savedAddressCount === 0,
         }
+
 
         const result = await Address.create(newAddress);
         console.log(result);
