@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import SavedAddressDialog from "./SavedAddressDialog";
+import SavedAddressDialog from "./AddAddressDialog";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { getSavedAddresses } from "@/lib/fetchData";
 import SavedAddressesSkeleton from "../skeleton/SavedAddressesSkeleton";
+import AddAddressDialog from "./AddAddressDialog";
+import EditAddressDialog from "./EditAddressDialog";
 
 
 
@@ -33,7 +35,7 @@ export default function SavedAddressesClient() {
 
   const { status, data: session } = useSession()
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isAddressEditing, setIsAddressEditing] = useState(false);
+  const [isEdit, setIsEdit] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['saved-addresses', session?.user.id],
@@ -56,11 +58,9 @@ export default function SavedAddressesClient() {
         </div>
 
         {/* dialog  */}
-        <SavedAddressDialog
-          isAddressEditing={isAddressEditing}
+        <AddAddressDialog
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
-          savedAddresses={savedAddresses}
         />
       </div>
 
@@ -126,8 +126,7 @@ export default function SavedAddressesClient() {
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => {
-                      setIsDialogOpen(true),
-                        setIsAddressEditing(true)
+                      setIsEdit(true)
                     }}
                   >
                     <Pencil className="h-4 w-4" />
@@ -141,6 +140,11 @@ export default function SavedAddressesClient() {
                   </Button>
                 </div>
               </CardFooter>
+              <EditAddressDialog
+                isEdit={isEdit}
+                setIsEdit={setIsEdit}
+                savedAddresses={item}
+              />
             </Card>
           ))}
         </div>

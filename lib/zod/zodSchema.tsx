@@ -18,4 +18,18 @@ export const baseSchema = z.object({
     ),
 
   confirmPassword: z.string(),
+
+  //for saved address
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .regex(/^(\+8801|01)[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
+  division: z.string().min(1, "Division is required"),
+  district: z.string().min(1, "District is required"),
+  city: z.string().min(1, "City is required"),
+  postalCode: z
+    .string()
+    .min(1, "Postal code is required")
+    .regex(/^\d{4}$/, "Postal code must be 4 digits"),
+  address: z.string().min(1, "Address is required"),
 });
