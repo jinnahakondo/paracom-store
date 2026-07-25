@@ -12,8 +12,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 interface Props {
-    isDialogOpen: boolean;
-    setIsDialogOpen: (open: boolean) => void;
+    isAdd: boolean;
+    setIsAdd: (open: boolean) => void;
 }
 
 const addressSchema = baseSchema.pick({
@@ -29,8 +29,8 @@ const addressSchema = baseSchema.pick({
 type AddressFormValues = z.infer<typeof addressSchema>
 
 export default function AddAddressDialog({
-    isDialogOpen,
-    setIsDialogOpen,
+    isAdd,
+    setIsAdd,
 }: Props) {
     const divisions = Object.keys(BD_LOCATION_DATA);
 
@@ -69,11 +69,11 @@ export default function AddAddressDialog({
         // Add your API call here to save the address
 
         reset() // Reset form values
-        setIsDialogOpen(false) // Close modal dialog
+        setIsAdd(false) // Close modal dialog
     }
 
     return (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isAdd} onOpenChange={setIsAdd}>
             <DialogTrigger asChild>
                 <Button className="gap-2">
                     <Plus className="h-4 w-4" /> Add Address
@@ -208,7 +208,7 @@ export default function AddAddressDialog({
                             variant="outline"
                             onClick={() => {
                                 reset()
-                                setIsDialogOpen(false)
+                                setIsAdd(false)
                             }}
                         >
                             Cancel

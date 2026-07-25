@@ -7,15 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import SavedAddressDialog from "./AddAddressDialog";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { getSavedAddresses } from "@/lib/fetchData";
 import SavedAddressesSkeleton from "../skeleton/SavedAddressesSkeleton";
 import AddAddressDialog from "./AddAddressDialog";
 import EditAddressDialog from "./EditAddressDialog";
-
-
 
 export interface Address {
   _id: string;
@@ -29,12 +26,10 @@ export interface Address {
   isDefault?: boolean;
 }
 
-
-
 export default function SavedAddressesClient() {
 
-  const { status, data: session } = useSession()
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { data: session } = useSession()
+  const [isAdd, setIsAdd] = useState(false);
   const [isEdit, setIsEdit] = useState(false)
 
   const { data, isLoading } = useQuery({
@@ -59,8 +54,8 @@ export default function SavedAddressesClient() {
 
         {/* dialog  */}
         <AddAddressDialog
-          isDialogOpen={isDialogOpen}
-          setIsDialogOpen={setIsDialogOpen}
+          isAdd={isAdd}
+          setIsAdd={setIsAdd}
         />
       </div>
 
