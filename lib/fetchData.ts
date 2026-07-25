@@ -144,9 +144,14 @@ export const getSearchSuggesion = async (search: string) => {
     const res = await axiosInstance.post('/api/search-suggestions', { search });
     return res.data;
 }
-
+// saved address 
 export const getSavedAddresses = async () => {
     const res = await axiosInstance.get('/api/save-address');
+    return res.data;
+}
+
+export const deleteSavedAddress = async (id: string) => {
+    const res = await axiosInstance.delete(`/api/save-address/${id}`)
     return res.data;
 }
 

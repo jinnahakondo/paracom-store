@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { getSavedAddresses } from "@/lib/fetchData";
+import { deleteSavedAddress, getSavedAddresses } from "@/lib/fetchData";
 import SavedAddressesSkeleton from "../skeleton/SavedAddressesSkeleton";
 import AddAddressDialog from "./AddAddressDialog";
 import EditAddressDialog from "./EditAddressDialog";
+import { toast } from "sonner";
 
 export interface Address {
   _id: string;
@@ -32,10 +33,26 @@ export default function SavedAddressesClient() {
   const [isAdd, setIsAdd] = useState(false);
   const [isEdit, setIsEdit] = useState(false)
 
+  const queryClient = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ['saved-addresses', session?.user.id],
     queryFn: getSavedAddresses,
   })
+
+  const { mutate: handleDelete, isPending } = useMutation({
+    mutationKey: ['delete-address'],
+    mutationFn: deleteSavedAddress,
+    onSuccess: () => {
+      toast.success("Address deleted!")
+      queryClient.invalidateQueries({ queryKey: ['saved-addresses'] })
+    },
+    onError: () => {
+      toast.error('Something went wrong!')
+    }
+  })
+
+
 
   const savedAddresses = data?.data ?? [];
 
@@ -123,10 +140,13 @@ export default function SavedAddressesClient() {
                     onClick={() => {
                       setIsEdit(true)
                     }}
+                    disabled={isPending}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
+                    disabled={isPending}
+                    onClick={() => handleDelete(item._id)}
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
