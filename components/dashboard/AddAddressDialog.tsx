@@ -79,7 +79,7 @@ export default function AddAddressDialog({
         mutationKey: ['add-address'],
         mutationFn: addAddress,
         onSuccess: () => {
-            toast.success('toast added successfully')
+            toast.success('address added successfully')
             queryClient.invalidateQueries({ queryKey: ['saved-addresses'] });
             reset();
             setIsAdd(false);

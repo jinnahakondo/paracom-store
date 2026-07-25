@@ -67,7 +67,7 @@ export default function SavedAddressesClient() {
           <p className="text-sm text-muted-foreground mb-4">
             Add an address to speed up checkout.
           </p>
-          <Button onClick={() => setIsDialogOpen(true)} variant="outline">
+          <Button onClick={() => setIsAdd(true)} variant="outline">
             <Plus className="mr-2 h-4 w-4" /> Add Address
           </Button>
         </Card>

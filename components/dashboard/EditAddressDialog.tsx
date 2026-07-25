@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Label } from '../ui/label'
@@ -10,6 +10,9 @@ import { useForm, Controller } from 'react-hook-form'
 import { baseSchema } from '@/lib/zod/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import axiosInstance from '@/lib/axiosInstance'
 
 interface Props {
     isEdit: boolean
@@ -29,46 +32,80 @@ const addressSchema = baseSchema.pick({
 
 type AddressFormValues = z.infer<typeof addressSchema>
 
+const updateAddress = async ({
+    update,
+    id
+}: {
+    update: AddressFormValues
+    id: string
+}) => {
+    const res = await axiosInstance.patch(`/api/save-address/${id}`, { address: update })
+    return res.data
+}
+
 export default function EditAddressDialog({
     isEdit,
     setIsEdit,
     savedAddresses,
 }: Props) {
-    const divisions = Object.keys(BD_LOCATION_DATA)
+    const divisions = useMemo(() => Object.keys(BD_LOCATION_DATA), [])
 
     const {
         register,
         handleSubmit,
         control,
+        reset,
         watch,
         setValue,
         formState: { errors },
     } = useForm<AddressFormValues>({
         resolver: zodResolver(addressSchema),
-        // Pass initial values directly from props
-        defaultValues: {
-            name: savedAddresses?.name || '',
-            phone: savedAddresses?.phone || '',
-            division: savedAddresses?.division || '',
-            district: savedAddresses?.district || '',
-            city: savedAddresses?.city || '',
-            postalCode: String(savedAddresses?.postalCode) || '',
-            address: savedAddresses?.address || '',
+    })
+
+    // Populate form whenever savedAddresses or isEdit state changes
+    useEffect(() => {
+        if (savedAddresses && isEdit) {
+            reset({
+                name: savedAddresses.name || '',
+                phone: savedAddresses.phone || '',
+                division: savedAddresses.division || '',
+                district: savedAddresses.district || '',
+                city: savedAddresses.city || '',
+                postalCode: String(savedAddresses.postalCode || ''),
+                address: savedAddresses.address || '',
+            })
+        }
+    }, [savedAddresses, isEdit, reset])
+
+    const selectedDivision = watch('division')
+
+    const availableDistricts = useMemo(() => {
+        if (!selectedDivision) return []
+        return BD_LOCATION_DATA[selectedDivision as keyof typeof BD_LOCATION_DATA] || []
+    }, [selectedDivision])
+
+    const queryClient = useQueryClient()
+
+    const { mutate, isPending } = useMutation({
+        mutationKey: ['update-address'],
+        mutationFn: updateAddress,
+        onSuccess: () => {
+            toast.success('Address updated successfully')
+            queryClient.invalidateQueries({ queryKey: ['saved-addresses'] })
+            setIsEdit(false)
+        },
+        onError: () => {
+            toast.error('Failed to update address. Please try again.')
         },
     })
 
-    // Watch the division field directly from React Hook Form
-    const selectedDivision = watch('division')
+    const onSubmit = (data: AddressFormValues) => {
+        if (!savedAddresses?._id) return
 
-    // Derive districts dynamically based on watched division value
-    const availableDistricts = useMemo(() => {
-        if (!selectedDivision) return []
-        return BD_LOCATION_DATA[selectedDivision] || []
-    }, [selectedDivision])
-
-    const onSubmit = async (data: AddressFormValues) => {
-        console.log('Submitted Data:', data)
-        setIsEdit(false)
+        mutate({
+            update: data,
+            id: String(savedAddresses._id)
+        })
     }
 
     return (
@@ -77,9 +114,7 @@ export default function EditAddressDialog({
                 <DialogHeader>
                     <DialogTitle>Update Address</DialogTitle>
                 </DialogHeader>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-4 pt-2">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
 
                     {/* Name & Phone */}
                     <div className="grid grid-cols-2 gap-4">
@@ -88,6 +123,7 @@ export default function EditAddressDialog({
                             <Input
                                 id="name"
                                 placeholder="e.g. John Doe"
+                                disabled={isPending}
                                 {...register('name')}
                             />
                             {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
@@ -98,6 +134,7 @@ export default function EditAddressDialog({
                             <Input
                                 id="phone"
                                 placeholder="e.g. 01700000000"
+                                disabled={isPending}
                                 {...register('phone')}
                             />
                             {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
@@ -114,12 +151,12 @@ export default function EditAddressDialog({
                                 control={control}
                                 render={({ field }) => (
                                     <Select
+                                        disabled={isPending}
                                         onValueChange={(val) => {
                                             field.onChange(val)
-                                            // Reset district when division changes
-                                            setValue('district', '')
+                                            setValue('district', '', { shouldValidate: true })
                                         }}
-                                        value={field.value}
+                                        value={field.value || ''}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select Division" />
@@ -145,12 +182,14 @@ export default function EditAddressDialog({
                                 control={control}
                                 render={({ field }) => (
                                     <Select
+                                        disabled={isPending || !selectedDivision}
                                         onValueChange={field.onChange}
-                                        value={field.value}
-                                        disabled={!selectedDivision}
+                                        value={field.value || ''}
                                     >
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select District" />
+                                            <SelectValue
+                                                placeholder={selectedDivision ? "Select District" : "Select Division First"}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {availableDistricts.map((dist) => (
@@ -173,6 +212,7 @@ export default function EditAddressDialog({
                             <Input
                                 id="city"
                                 placeholder="e.g. Sadullapur"
+                                disabled={isPending}
                                 {...register('city')}
                             />
                             {errors.city && <p className="text-xs text-red-500">{errors.city.message}</p>}
@@ -182,6 +222,7 @@ export default function EditAddressDialog({
                             <Input
                                 id="postalCode"
                                 placeholder="5710"
+                                disabled={isPending}
                                 {...register('postalCode')}
                             />
                             {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode.message}</p>}
@@ -194,6 +235,7 @@ export default function EditAddressDialog({
                         <Input
                             id="address"
                             placeholder="House, road, locality..."
+                            disabled={isPending}
                             {...register('address')}
                         />
                         {errors.address && <p className="text-xs text-red-500">{errors.address.message}</p>}
@@ -203,11 +245,14 @@ export default function EditAddressDialog({
                         <Button
                             type="button"
                             variant="outline"
+                            disabled={isPending}
                             onClick={() => setIsEdit(false)}
                         >
                             Cancel
                         </Button>
-                        <Button type="submit">Update Address</Button>
+                        <Button disabled={isPending} type="submit">
+                            {isPending ? 'Updating...' : 'Update Address'}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

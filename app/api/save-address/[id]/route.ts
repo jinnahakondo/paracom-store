@@ -12,15 +12,24 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
     try {
         await connectDb();
         const { user } = await verifyAuth();
-        const body = await req.json();
+        const { address } = await req.json();
+        console.log(address);
         const { id } = await params;
         const result = await Address.findOneAndUpdate(
             {
                 user: user.id,
-                id
+                _id: id
             },
-            { $set: body }
+            { $set: address },
+            { returnDocument: 'after' }
         )
+
+        if (!result) {
+            return response.error({
+                message: "Address not found!",
+                status:404
+            });
+        }
 
         return response.success({
             message: 'Address Updated',
