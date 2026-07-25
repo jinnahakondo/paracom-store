@@ -10,6 +10,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { baseSchema } from '@/lib/zod/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import axiosInstance from '@/lib/axiosInstance'
+import { toast } from 'sonner'
+
 
 interface Props {
     isAdd: boolean;
@@ -26,7 +30,13 @@ const addressSchema = baseSchema.pick({
     address: true,
 })
 
-type AddressFormValues = z.infer<typeof addressSchema>
+export type AddressFormValues = z.infer<typeof addressSchema>
+
+const addAddress = async (newAddress: AddressFormValues) => {
+    const res = await axiosInstance.post('/api/save-address', { address: newAddress });
+    return res.data;
+}
+
 
 export default function AddAddressDialog({
     isAdd,
@@ -63,13 +73,24 @@ export default function AddAddressDialog({
         return BD_LOCATION_DATA[selectedDivision] || []
     }, [selectedDivision])
 
+    const queryClient = useQueryClient();
+
+    const { mutate, isPending } = useMutation({
+        mutationKey: ['add-address'],
+        mutationFn: addAddress,
+        onSuccess: () => {
+            toast.success('toast added successfully')
+            queryClient.invalidateQueries({ queryKey: ['saved-addresses'] });
+            reset();
+            setIsAdd(false);
+        },
+        onError: (error) => {
+            toast.error("Something went wrong!")
+        },
+    })
+
     const onSubmit = async (data: AddressFormValues) => {
-        console.log('New Address Data:', data)
-
-        // Add your API call here to save the address
-
-        reset() // Reset form values
-        setIsAdd(false) // Close modal dialog
+        mutate(data)
     }
 
     return (
@@ -213,7 +234,10 @@ export default function AddAddressDialog({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit">Save Address</Button>
+                        <Button
+                            disabled={isPending}
+                            type="submit"
+                        >Save Address</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

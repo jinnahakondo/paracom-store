@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     try {
         await connectDb();
         const { user } = await verifyAuth();
-        const address = await req.json();
+        const { address } = await req.json();
 
         const savedAddressCount = await Address.countDocuments({
             user: user.id

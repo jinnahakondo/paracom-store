@@ -1,5 +1,6 @@
 import { CartItemType, CategoryType, ProductType } from "@/types/types";
 import axiosInstance from "./axiosInstance";
+import { Address } from "@/components/dashboard/SavedAddressesClient";
 
 interface UpdateDBItemQty {
     itemId: string,
@@ -144,12 +145,12 @@ export const getSearchSuggesion = async (search: string) => {
     return res.data;
 }
 
-//get saved addresses
-
 export const getSavedAddresses = async () => {
     const res = await axiosInstance.get('/api/save-address');
     return res.data;
 }
+
+
 
 
 // payment -----
