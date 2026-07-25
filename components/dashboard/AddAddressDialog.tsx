@@ -114,6 +114,7 @@ export default function AddAddressDialog({
                                 id="name"
                                 placeholder="e.g. John Doe"
                                 {...register('name')}
+                                disabled={isPending}
                             />
                             {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
                         </div>
@@ -124,6 +125,7 @@ export default function AddAddressDialog({
                                 id="phone"
                                 placeholder="e.g. 01700000000"
                                 {...register('phone')}
+                                disabled={isPending}
                             />
                             {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
                         </div>
@@ -144,6 +146,7 @@ export default function AddAddressDialog({
                                             setValue('district', '') // Reset district selection when division changes
                                         }}
                                         value={field.value}
+                                        disabled={isPending}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select Division" />
@@ -171,7 +174,7 @@ export default function AddAddressDialog({
                                     <Select
                                         onValueChange={field.onChange}
                                         value={field.value}
-                                        disabled={!selectedDivision}
+                                        disabled={!selectedDivision || isPending}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select District" />
@@ -198,6 +201,7 @@ export default function AddAddressDialog({
                                 id="city"
                                 placeholder="e.g. Sadullapur"
                                 {...register('city')}
+                                disabled={isPending}
                             />
                             {errors.city && <p className="text-xs text-red-500">{errors.city.message}</p>}
                         </div>
@@ -207,6 +211,7 @@ export default function AddAddressDialog({
                                 id="postalCode"
                                 placeholder="5710"
                                 {...register('postalCode')}
+                                disabled={isPending}
                             />
                             {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode.message}</p>}
                         </div>
@@ -219,6 +224,7 @@ export default function AddAddressDialog({
                             id="address"
                             placeholder="House, road, locality..."
                             {...register('address')}
+                            disabled={isPending}
                         />
                         {errors.address && <p className="text-xs text-red-500">{errors.address.message}</p>}
                     </div>
