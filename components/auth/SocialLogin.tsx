@@ -7,7 +7,9 @@ import { useCartStore } from '@/store/useCartStore'
 
 export default function SocialLogin() {
 
-    const mergeCartWithDb = useCartStore(state => state.mergeCartWithDb)
+    const mergeCartWithDb = useCartStore(state => state.mergeCartWithDb);
+    const fetchAddresses = useCartStore(state => state.fetchAddresses)
+
     return (
         <div>
             <Button
@@ -18,6 +20,7 @@ export default function SocialLogin() {
                     const res = await signIn("google");
                     if (res?.ok) {
                         mergeCartWithDb();
+                        fetchAddresses();
                     }
                 }}
             >

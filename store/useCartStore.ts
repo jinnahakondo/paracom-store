@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { StateCreator } from "zustand";
-import { CartItemType } from '@/types/types';
-import { addToCartDB, getDBCartData, mergeDBCart, removeDBCartItem, updateDBItemQty } from '@/lib/fetchData';
+import { AddressType, CartItemType } from '@/types/types';
+import { addAddress, addToCartDB, deleteAddress, getDBCartData, getSavedAddresses, mergeDBCart, removeDBCartItem, updateAddressApi, updateDBItemQty } from '@/lib/fetchData';
 
 
 
@@ -33,14 +33,24 @@ interface CartState {
     updateQuantity: ({ status, itemId, quantity, type }: UpdateQuantity) => Promise<void>;
     clearCart: (userId?: string | null) => void;
     mergeCartWithDb: () => Promise<void>;
+    //address related
+    savedAddresses: AddressType[];
+    addAddress: (address: AddressType) => Promise<void>;
+    updateAddress: ({ addressId, updateAddress }: { addressId: string, updateAddress: AddressType }) => Promise<void>;
+    deleteAddress: (addressId: string) => Promise<void>;
+    setDefaultAddress?: (addressId: string) => Promise<void>;
+    fetchAddresses: () => Promise<void>;
+    isAddressLoading: boolean;
 }
 
 
 
 const store: StateCreator<CartState> = (set, get) => ({
     cartItems: [],
-    isLoading: false,
     totalPrice: 0,
+    savedAddresses: [],
+    isLoading: false,
+    isAddressLoading: false,
 
     addToCart: async ({ status, newItem }) => {
         const currentItems = get().cartItems;
@@ -147,10 +157,7 @@ const store: StateCreator<CartState> = (set, get) => ({
         // making an arry with mergedMap values 
         const mergedCart = Array.from(mergedMap.values())
         set({ cartItems: mergedCart });
-
-
         // save merged data in db 
-
         try {
             await mergeDBCart(mergedCart)
         } catch (error) {
@@ -158,7 +165,60 @@ const store: StateCreator<CartState> = (set, get) => ({
         }
 
 
+    },
+
+    //user address related 
+    fetchAddresses: async () => {
+        console.log('hello');
+        set({ isAddressLoading: true });
+        try {
+            const { data } = await getSavedAddresses();
+            set({ savedAddresses: data ?? [], isAddressLoading: false });
+        } catch (error) {
+            console.error("failde to load addresses", error);
+            set({ isAddressLoading: false });
+        }
+    },
+    addAddress: async (address) => {
+        set({ isAddressLoading: true })
+        try {
+            const res = await addAddress(address);
+            set(state => ({
+                savedAddresses: [...state.savedAddresses, res.data],
+                isAddressLoading: false
+            }))
+            set({ isAddressLoading: false })
+        } catch (error) {
+            console.log(error);
+        } finally {
+            set({ isAddressLoading: false })
+        }
+    },
+    updateAddress: async ({ addressId, updateAddress }) => {
+        const updatesavedAddresses = get().savedAddresses.map(address => address._id === addressId ? {
+            ...address, ...updateAddress
+        } : address);
+
+        set({ savedAddresses: updatesavedAddresses })
+
+        try {
+            await updateAddressApi({ addressId, updateAddress })
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    deleteAddress: async (addressId) => {
+        const allAddresses = get().savedAddresses;
+        const newAddresses = allAddresses.filter(a => a._id !== addressId)
+        set({ savedAddresses: newAddresses })
+        try {
+            await deleteAddress(addressId)
+        } catch (error) {
+            console.log(error);
+        }
     }
+
+
 })
 
 

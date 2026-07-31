@@ -72,3 +72,16 @@ export interface SearchSuggestionItemType {
   };
   slug: string;
 }
+
+
+export interface AddressType {
+  _id?: string;
+  name: string;
+  phone: string;
+  division: string;
+  district: string;
+  city: string;
+  postalCode: number | string;
+  address: string;
+  isDefault?: boolean;
+}

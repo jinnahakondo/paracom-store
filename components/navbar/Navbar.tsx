@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavLink from './NavLink'
 import { Heart, Search, User } from 'lucide-react'
 import Cart from '../cart/Cart'
@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import { DropdownMenuAvatar } from './DropdownMenuAvatar'
 import Logo from '../logo/Logo'
 import SearchBar from './SearchBar'
+import { useCartStore } from '@/store/useCartStore'
 
 
 
@@ -18,6 +19,12 @@ export default function Navbar() {
 
     const { data: session, status } = useSession()
 
+    // const fetchAddresses = useCartStore(state => state.fetchAddresses);
+
+    // useEffect(() => {
+    //     fetchAddresses()
+
+    // }, [fetchAddresses])
 
     return (
         <div className='w-full h-20 bg-background border-b border-border '>

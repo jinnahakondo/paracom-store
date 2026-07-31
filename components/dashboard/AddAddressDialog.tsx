@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '@/lib/axiosInstance'
 import { toast } from 'sonner'
+import { useCartStore } from '@/store/useCartStore'
 
 
 interface Props {
@@ -31,12 +32,6 @@ const addressSchema = baseSchema.pick({
 })
 
 export type AddressFormValues = z.infer<typeof addressSchema>
-
-const addAddress = async (newAddress: AddressFormValues) => {
-    const res = await axiosInstance.post('/api/save-address', { address: newAddress });
-    return res.data;
-}
-
 
 export default function AddAddressDialog({
     isAdd,
@@ -73,24 +68,16 @@ export default function AddAddressDialog({
         return BD_LOCATION_DATA[selectedDivision] || []
     }, [selectedDivision])
 
-    const queryClient = useQueryClient();
-
-    const { mutate, isPending } = useMutation({
-        mutationKey: ['add-address'],
-        mutationFn: addAddress,
-        onSuccess: () => {
-            toast.success('address added successfully')
-            queryClient.invalidateQueries({ queryKey: ['saved-addresses'] });
-            reset();
-            setIsAdd(false);
-        },
-        onError: (error) => {
-            toast.error("Something went wrong!")
-        },
-    })
+    const addAddress = useCartStore(s => s.addAddress)
 
     const onSubmit = async (data: AddressFormValues) => {
-        mutate(data)
+        try {
+            await addAddress(data);
+            toast.success("Address added successfully");
+            setIsAdd(false)
+        } catch (error) {
+            toast.error("Failed to add address");
+        }
     }
 
     return (
@@ -114,7 +101,7 @@ export default function AddAddressDialog({
                                 id="name"
                                 placeholder="e.g. John Doe"
                                 {...register('name')}
-                                disabled={isPending}
+
                             />
                             {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
                         </div>
@@ -125,7 +112,7 @@ export default function AddAddressDialog({
                                 id="phone"
                                 placeholder="e.g. 01700000000"
                                 {...register('phone')}
-                                disabled={isPending}
+
                             />
                             {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
                         </div>
@@ -146,7 +133,7 @@ export default function AddAddressDialog({
                                             setValue('district', '') // Reset district selection when division changes
                                         }}
                                         value={field.value}
-                                        disabled={isPending}
+
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select Division" />
@@ -174,7 +161,6 @@ export default function AddAddressDialog({
                                     <Select
                                         onValueChange={field.onChange}
                                         value={field.value}
-                                        disabled={!selectedDivision || isPending}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select District" />
@@ -201,7 +187,7 @@ export default function AddAddressDialog({
                                 id="city"
                                 placeholder="e.g. Sadullapur"
                                 {...register('city')}
-                                disabled={isPending}
+
                             />
                             {errors.city && <p className="text-xs text-red-500">{errors.city.message}</p>}
                         </div>
@@ -211,7 +197,7 @@ export default function AddAddressDialog({
                                 id="postalCode"
                                 placeholder="5710"
                                 {...register('postalCode')}
-                                disabled={isPending}
+
                             />
                             {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode.message}</p>}
                         </div>
@@ -224,7 +210,7 @@ export default function AddAddressDialog({
                             id="address"
                             placeholder="House, road, locality..."
                             {...register('address')}
-                            disabled={isPending}
+
                         />
                         {errors.address && <p className="text-xs text-red-500">{errors.address.message}</p>}
                     </div>
@@ -241,7 +227,7 @@ export default function AddAddressDialog({
                             Cancel
                         </Button>
                         <Button
-                            disabled={isPending}
+
                             type="submit"
                         >Save Address</Button>
                     </DialogFooter>

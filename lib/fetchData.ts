@@ -1,4 +1,4 @@
-import { CartItemType, CategoryType, ProductType } from "@/types/types";
+import { AddressType, CartItemType, CategoryType, ProductType } from "@/types/types";
 import axiosInstance from "./axiosInstance";
 import { Address } from "@/components/dashboard/SavedAddressesClient";
 
@@ -150,8 +150,18 @@ export const getSavedAddresses = async () => {
     return res.data;
 }
 
-export const deleteSavedAddress = async (id: string) => {
-    const res = await axiosInstance.delete(`/api/save-address/${id}`)
+export const addAddress = async (address: AddressType) => {
+    const res = await axiosInstance.post('/api/save-address', { address });
+    return res.data;
+}
+
+export const updateAddressApi = async ({ addressId, updateAddress }: { updateAddress: AddressType, addressId: string }) => {
+    const res = await axiosInstance.patch(`/api/save-address/${addressId}`, { address: updateAddress });
+    return res.data;
+}
+
+export const deleteAddress = async (addressId: string) => {
+    const res = await axiosInstance.delete(`/api/save-address/${addressId}`)
     return res.data;
 }
 

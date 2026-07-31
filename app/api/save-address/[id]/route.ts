@@ -8,12 +8,13 @@ interface IParams {
     params: Promise<{ id: string }>
 }
 
+
 export async function PATCH(req: NextRequest, { params }: IParams) {
     try {
         await connectDb();
         const { user } = await verifyAuth();
         const { id } = await params;
-        
+
         const body = await req.json().catch(() => null);
         if (!body || !body.address) {
             return response.error({
@@ -23,7 +24,6 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
         }
 
         const { address } = body;
-
         // Sanitize: remove immutable/restricted keys
         delete address._id;
         delete address.user;
@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest, { params }: IParams) {
                 _id: id
             },
             { $set: address },
-            { 
+            {
                 returnDocument: 'after',
                 runValidators: true // Enforces Mongoose schema validation on update
             }

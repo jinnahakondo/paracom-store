@@ -26,7 +26,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
 
-  const mergeCartWithDb = useCartStore(state => state.mergeCartWithDb)
+  const mergeCartWithDb = useCartStore(state => state.mergeCartWithDb);
+  const fetchAddresses = useCartStore(state => state.fetchAddresses);
+
 
   const router = useRouter();
 
@@ -55,6 +57,7 @@ export default function Login() {
     if (res?.ok) {
       router.push('/');
       mergeCartWithDb();
+      fetchAddresses();
     } else {
       alert(res?.error);
     }

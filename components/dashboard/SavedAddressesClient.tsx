@@ -6,26 +6,12 @@ import { Plus, MapPin, Pencil, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { deleteSavedAddress, getSavedAddresses } from "@/lib/fetchData";
-import SavedAddressesSkeleton from "../skeleton/SavedAddressesSkeleton";
 import AddAddressDialog from "./AddAddressDialog";
 import EditAddressDialog from "./EditAddressDialog";
 import { toast } from "sonner";
-
-export interface Address {
-  _id: string;
-  name: string;
-  phone: string;
-  division: string;
-  district: string;
-  city: string;
-  postalCode: number | string;
-  address: string;
-  isDefault?: boolean;
-}
+import { AddressType } from "@/types/types";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function SavedAddressesClient() {
 
@@ -33,30 +19,9 @@ export default function SavedAddressesClient() {
   const [isAdd, setIsAdd] = useState(false);
   const [isEdit, setIsEdit] = useState(false)
 
-  const queryClient = useQueryClient();
+  const savedAddresses = useCartStore(s => s.savedAddresses);
+  const deleteAddress = useCartStore(s => s.deleteAddress);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['saved-addresses', session?.user.id],
-    queryFn: getSavedAddresses,
-  })
-
-  const { mutate: handleDelete, isPending } = useMutation({
-    mutationKey: ['delete-address'],
-    mutationFn: deleteSavedAddress,
-    onSuccess: () => {
-      toast.success("Address deleted!")
-      queryClient.invalidateQueries({ queryKey: ['saved-addresses'] })
-    },
-    onError: () => {
-      toast.error('Something went wrong!')
-    }
-  })
-
-
-
-  const savedAddresses = data?.data ?? [];
-
-  if (isLoading) return <SavedAddressesSkeleton />
 
   return (
     <div className="space-y-6">
@@ -90,9 +55,9 @@ export default function SavedAddressesClient() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {savedAddresses.map((item: Address) => (
+          {savedAddresses.map((item: AddressType, i: number) => (
             <Card
-              key={item._id}
+              key={item?._id || i}
               className={`relative flex flex-col justify-between transition-colors ${item.isDefault ? "border-primary/50 bg-primary/5" : ""
                 }`}
             >
@@ -122,6 +87,7 @@ export default function SavedAddressesClient() {
               <CardFooter className="pt-2 flex items-center justify-between border-t border-border/50 mt-auto">
                 {!item.isDefault ? (
                   <Button
+                    // onClick={()}
                     variant="ghost"
                     size="sm"
                     className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
@@ -140,13 +106,19 @@ export default function SavedAddressesClient() {
                     onClick={() => {
                       setIsEdit(true)
                     }}
-                    disabled={isPending}
+
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
-                    disabled={isPending}
-                    onClick={() => handleDelete(item._id)}
+                    onClick={async () => {
+                      try {
+                        await deleteAddress(String(item._id));
+                        toast.success("Address deleted successfully");
+                      } catch (error) {
+                        toast.error("Failed to delete address");
+                      }
+                    }}
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
