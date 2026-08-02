@@ -77,18 +77,19 @@ export default function EditAddressDialog({
 
 
     const onSubmit = async (data: AddressFormValues) => {
-        if (!savedAddresses?.name) return;
+        if (!savedAddresses?._id) return;
 
-        // try {
-        //     await updateAddress({
-        //         addressId: savedAddresses._id,
-        //         updateAddress: data
-        //     });
-        //     toast.success("Address updated successfully");
-        // } catch (error) {
-        //     toast.error("Failed to update address");
-        // }
-        console.log(data);
+        try {
+            await updateAddress(
+                {
+                    addressId: String(savedAddresses._id),
+                    updateAddress: data
+                }
+            );
+            toast.success("Address updated successfully");
+        } catch (error) {
+            toast.error("Failed to update address");
+        }
     }
 
     return (

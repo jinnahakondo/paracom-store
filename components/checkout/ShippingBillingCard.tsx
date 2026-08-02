@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axiosInstance";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/useCartStore";
 
 // Defined Interface matching your data contract
 export interface Address {
@@ -25,23 +26,9 @@ export default function ShippingBillingCard() {
     const { status } = useSession();
     const router = useRouter();
 
-    const { data, isPending } = useQuery<{ data: Address }>({
-        queryKey: ["shiping-address"],
-        queryFn: async () => {
-            const res = await axiosInstance.get("/api/save-address/default");
-            return res.data;
-        },
-        enabled: status === "authenticated",
-    });
+    const defaultAddress = useCartStore(state => state.savedAddresses.find(address => address.isDefault))
 
-    if (isPending) {
-        return <div className="grid place-items-center">loading...</div>;
-    }
-
-    // Fallback check in case data or default address isn't set yet
-    const address = data?.data;
-
-    if (!address) {
+    if (!defaultAddress) {
         return (
             <Card className="w-full bg-card text-card-foreground shadow-sm">
                 <CardContent className="p-6 flex justify-between items-center">
@@ -88,12 +75,12 @@ export default function ShippingBillingCard() {
                     <div className="space-y-4">
                         {/* Name and Phone */}
                         <div className="flex flex-wrap items-center gap-2 md:gap-3 text-base md:text-lg">
-                            <span className="font-bold">{address.name}</span>
+                            <span className="font-bold">{defaultAddress.name}</span>
                             <span className="hidden md:inline text-muted-foreground/60">
                                 |
                             </span>
                             <span className="text-muted-foreground font-medium">
-                                {address.phone}
+                                {defaultAddress.phone}
                             </span>
                         </div>
 
@@ -103,10 +90,10 @@ export default function ShippingBillingCard() {
                                 variant="default"
                                 className="bg-primary text-primary-foreground font-bold tracking-wider px-2.5 py-0.5 text-[10px] rounded-full shadow-none pointer-events-none"
                             >
-                                {address.division}
+                                {defaultAddress.division}
                             </Badge>
                             <p className="text-muted-foreground font-medium text-sm md:text-base leading-relaxed">
-                                {address.address}
+                                {defaultAddress.address}
                             </p>
                         </div>
                     </div>
