@@ -16,7 +16,7 @@ import { AddressType } from '@/types/types'
 interface Props {
     isEdit: boolean
     setIsEdit: (open: boolean) => void
-    savedAddresses: AddressType
+    savedAddress: AddressType
 }
 
 const addressSchema = baseSchema.pick({
@@ -35,7 +35,7 @@ type AddressFormValues = z.infer<typeof addressSchema>
 export default function EditAddressDialog({
     isEdit,
     setIsEdit,
-    savedAddresses,
+    savedAddress,
 }: Props) {
     const divisions = useMemo(() => Object.keys(BD_LOCATION_DATA), [])
 
@@ -53,18 +53,18 @@ export default function EditAddressDialog({
 
     // Populate form whenever savedAddresses or isEdit state changes
     useEffect(() => {
-        if (savedAddresses && isEdit) {
+        if (savedAddress && isEdit) {
             reset({
-                name: savedAddresses.name || '',
-                phone: savedAddresses.phone || '',
-                division: savedAddresses.division || '',
-                district: savedAddresses.district || '',
-                city: savedAddresses.city || '',
-                postalCode: String(savedAddresses.postalCode || ''),
-                address: savedAddresses.address || '',
+                name: savedAddress.name || '',
+                phone: savedAddress.phone || '',
+                division: savedAddress.division || '',
+                district: savedAddress.district || '',
+                city: savedAddress.city || '',
+                postalCode: String(savedAddress.postalCode || ''),
+                address: savedAddress.address || '',
             })
         }
-    }, [savedAddresses, isEdit, reset])
+    }, [savedAddress, isEdit, reset])
 
     const selectedDivision = watch('division')
 
@@ -74,19 +74,21 @@ export default function EditAddressDialog({
     }, [selectedDivision]);
 
     const updateAddress = useCartStore(s => s.updateAddress);
+    const isLoading = useCartStore(s => s.isAddressLoading);
 
 
     const onSubmit = async (data: AddressFormValues) => {
-        if (!savedAddresses?._id) return;
+        if (!savedAddress?._id) return;
 
         try {
             await updateAddress(
                 {
-                    addressId: String(savedAddresses._id),
+                    addressId: String(savedAddress._id),
                     updateAddress: data
                 }
             );
             toast.success("Address updated successfully");
+            setIsEdit(false);
         } catch (error) {
             toast.error("Failed to update address");
         }
@@ -108,6 +110,7 @@ export default function EditAddressDialog({
                                 id="name"
                                 placeholder="e.g. John Doe"
                                 {...register('name')}
+                                disabled={isLoading}
                             />
                             {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
                         </div>
@@ -118,6 +121,7 @@ export default function EditAddressDialog({
                                 id="phone"
                                 placeholder="e.g. 01700000000"
                                 {...register('phone')}
+                                disabled={isLoading}
                             />
                             {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
                         </div>
@@ -137,7 +141,8 @@ export default function EditAddressDialog({
                                             field.onChange(val)
                                             setValue('district', '', { shouldValidate: true })
                                         }}
-                                        value={field.value || ''}
+                                        value={field.value || undefined}
+                                        disabled={isLoading}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select Division" />
@@ -164,7 +169,8 @@ export default function EditAddressDialog({
                                 render={({ field }) => (
                                     <Select
                                         onValueChange={field.onChange}
-                                        value={field.value || ''}
+                                        value={field.value || undefined}
+                                        disabled={isLoading || !selectedDivision}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue
@@ -193,6 +199,7 @@ export default function EditAddressDialog({
                                 id="city"
                                 placeholder="e.g. Sadullapur"
                                 {...register('city')}
+                                disabled={isLoading}
                             />
                             {errors.city && <p className="text-xs text-red-500">{errors.city.message}</p>}
                         </div>
@@ -202,6 +209,7 @@ export default function EditAddressDialog({
                                 id="postalCode"
                                 placeholder="5710"
                                 {...register('postalCode')}
+                                disabled={isLoading}
                             />
                             {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode.message}</p>}
                         </div>
@@ -214,6 +222,7 @@ export default function EditAddressDialog({
                             id="address"
                             placeholder="House, road, locality..."
                             {...register('address')}
+                            disabled={isLoading}
                         />
                         {errors.address && <p className="text-xs text-red-500">{errors.address.message}</p>}
                     </div>
@@ -223,10 +232,16 @@ export default function EditAddressDialog({
                             type="button"
                             variant="outline"
                             onClick={() => setIsEdit(false)}
+                            disabled={isLoading}
                         >
                             Cancel
                         </Button>
-                        <Button type='submit'>Update Address</Button>
+                        <Button
+                            type='submit'
+                            disabled={isLoading}
+                        >
+                            Update Address
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

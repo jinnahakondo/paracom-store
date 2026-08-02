@@ -21,7 +21,9 @@ export default function SavedAddressesClient() {
 
   const savedAddresses = useCartStore(s => s.savedAddresses);
   const deleteAddress = useCartStore(s => s.deleteAddress);
+  const isLoading = useCartStore(s => s.isAddressLoading);
 
+  if (isLoading) return <div className="flex justify-center">Loading...</div>
 
   return (
     <div className="space-y-6">
@@ -130,7 +132,7 @@ export default function SavedAddressesClient() {
               <EditAddressDialog
                 isEdit={isEdit}
                 setIsEdit={setIsEdit}
-                savedAddresses={item}
+                savedAddress={item}
               />
             </Card>
           ))}

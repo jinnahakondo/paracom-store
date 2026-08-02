@@ -195,6 +195,7 @@ const store: StateCreator<CartState> = (set, get) => ({
         }
     },
     updateAddress: async ({ addressId, updateAddress }) => {
+        set({ isAddressLoading: true });
         const updatesavedAddresses = get().savedAddresses.map(address => address._id === addressId ? {
             ...address, ...updateAddress
         } : address);
@@ -203,6 +204,7 @@ const store: StateCreator<CartState> = (set, get) => ({
 
         try {
             await updateAddressApi({ addressId, updateAddress })
+            set({ isAddressLoading: false })
         } catch (error) {
             console.log(error);
         }
