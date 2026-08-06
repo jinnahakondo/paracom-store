@@ -50,7 +50,7 @@ const store: StateCreator<CartState> = (set, get) => ({
     totalPrice: 0,
     savedAddresses: [],
     isLoading: false,
-    isAddressLoading: false,
+    isAddressLoading: true,
 
     addToCart: async ({ status, newItem }) => {
         const currentItems = get().cartItems;
@@ -204,9 +204,11 @@ const store: StateCreator<CartState> = (set, get) => ({
 
         try {
             await updateAddressApi({ addressId, updateAddress })
-            set({ isAddressLoading: false })
         } catch (error) {
             console.log(error);
+        }
+        finally {
+            set({ isAddressLoading: false })
         }
     },
     deleteAddress: async (addressId) => {
@@ -227,6 +229,12 @@ const store: StateCreator<CartState> = (set, get) => ({
 export const useCartStore = create<CartState>()(
     persist(
         devtools(store),
-        { name: "cart" }
+        {
+            name: "cart",
+            partialize: (state) => ({
+                cartItems: state.cartItems,
+                savedAddresses: state.savedAddresses,
+            })
+        }
     )
 )
