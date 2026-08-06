@@ -173,9 +173,10 @@ const store: StateCreator<CartState> = (set, get) => ({
         set({ isAddressLoading: true });
         try {
             const { data } = await getSavedAddresses();
-            set({ savedAddresses: data ?? [], isAddressLoading: false });
+            set({ savedAddresses: data ?? [] });
         } catch (error) {
             console.error("failde to load addresses", error);
+        } finally {
             set({ isAddressLoading: false });
         }
     },
@@ -184,10 +185,8 @@ const store: StateCreator<CartState> = (set, get) => ({
         try {
             const res = await addAddress(address);
             set(state => ({
-                savedAddresses: [...state.savedAddresses, res.data],
-                isAddressLoading: false
+                savedAddresses: [...state.savedAddresses, res.data]
             }))
-            set({ isAddressLoading: false })
         } catch (error) {
             console.log(error);
         } finally {
