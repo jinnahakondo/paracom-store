@@ -20,7 +20,6 @@ export default function SocialLogin() {
                     const res = await signIn("google");
                     if (res?.ok) {
                         mergeCartWithDb();
-                        fetchAddresses();
                     }
                 }}
             >

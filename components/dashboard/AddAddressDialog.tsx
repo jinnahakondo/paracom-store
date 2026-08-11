@@ -10,8 +10,6 @@ import { useForm, Controller } from 'react-hook-form'
 import { baseSchema } from '@/lib/zod/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axiosInstance from '@/lib/axiosInstance'
 import { toast } from 'sonner'
 import { useCartStore } from '@/store/useCartStore'
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, MapPin, Pencil, Trash2, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,15 +15,23 @@ import { useCartStore } from "@/store/useCartStore";
 
 export default function SavedAddressesClient() {
 
-  const { data: session } = useSession()
-  const [isAdd, setIsAdd] = useState(false);
-  const [isEdit, setIsEdit] = useState(false)
 
+  const [isAdd, setIsAdd] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<AddressType | null>(null)
+
+  const fetchAddresses = useCartStore(s => s.fetchAddresses)
   const savedAddresses = useCartStore(s => s.savedAddresses);
   const deleteAddress = useCartStore(s => s.deleteAddress);
   const isLoading = useCartStore(s => s.isAddressLoading);
 
+  useEffect(() => {
+    fetchAddresses()
+  }, [])
+
   if (isLoading) return <div className="flex justify-center">Loading...</div>
+
+
 
   return (
     <div className="space-y-6">
@@ -106,6 +114,7 @@ export default function SavedAddressesClient() {
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => {
+                      setEditingAddress(item)
                       setIsEdit(true)
                     }}
 
@@ -129,15 +138,16 @@ export default function SavedAddressesClient() {
                   </Button>
                 </div>
               </CardFooter>
-              <EditAddressDialog
-                isEdit={isEdit}
-                setIsEdit={setIsEdit}
-                savedAddress={item}
-              />
             </Card>
           ))}
         </div>
       )}
+      {/* edit address modal */}
+      <EditAddressDialog
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        editingAddress={editingAddress}
+      />
     </div>
   );
 }

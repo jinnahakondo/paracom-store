@@ -10,7 +10,6 @@ import { useSession } from 'next-auth/react'
 import { DropdownMenuAvatar } from './DropdownMenuAvatar'
 import Logo from '../logo/Logo'
 import SearchBar from './SearchBar'
-import { useCartStore } from '@/store/useCartStore'
 
 
 

@@ -16,7 +16,8 @@ import { AddressType } from '@/types/types'
 interface Props {
     isEdit: boolean
     setIsEdit: (open: boolean) => void
-    savedAddress: AddressType
+    editingAddress: AddressType | null;
+    setEditingAddress: (address: AddressType) => void;
 }
 
 const addressSchema = baseSchema.pick({
@@ -35,7 +36,8 @@ type AddressFormValues = z.infer<typeof addressSchema>
 export default function EditAddressDialog({
     isEdit,
     setIsEdit,
-    savedAddress,
+    editingAddress,
+    setEditingAddress
 }: Props) {
     const divisions = useMemo(() => Object.keys(BD_LOCATION_DATA), [])
 
@@ -51,20 +53,20 @@ export default function EditAddressDialog({
         resolver: zodResolver(addressSchema),
     })
 
-    // Populate form whenever savedAddresses or isEdit state changes
+    // Populate form whenever editingAddress or isEdit state changes
     useEffect(() => {
-        if (savedAddress && isEdit) {
+        if (editingAddress && isEdit) {
             reset({
-                name: savedAddress.name || '',
-                phone: savedAddress.phone || '',
-                division: savedAddress.division || '',
-                district: savedAddress.district || '',
-                city: savedAddress.city || '',
-                postalCode: String(savedAddress.postalCode || ''),
-                address: savedAddress.address || '',
+                name: editingAddress.name || '',
+                phone: editingAddress.phone || '',
+                division: editingAddress.division || '',
+                district: editingAddress.district || '',
+                city: editingAddress.city || '',
+                postalCode: String(editingAddress.postalCode || ''),
+                address: editingAddress.address || '',
             })
         }
-    }, [savedAddress, isEdit, reset])
+    }, [editingAddress, isEdit, reset])
 
     const selectedDivision = watch('division')
 
@@ -78,12 +80,12 @@ export default function EditAddressDialog({
 
 
     const onSubmit = async (data: AddressFormValues) => {
-        if (!savedAddress?._id) return;
+        if (!editingAddress?._id) return;
 
         try {
             await updateAddress(
                 {
-                    addressId: String(savedAddress._id),
+                    addressId: String(editingAddress._id),
                     updateAddress: data
                 }
             );

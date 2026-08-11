@@ -57,7 +57,6 @@ export default function Login() {
     if (res?.ok) {
       router.push('/');
       mergeCartWithDb();
-      fetchAddresses();
     } else {
       alert(res?.error);
     }

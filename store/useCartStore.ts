@@ -181,7 +181,6 @@ const store: StateCreator<CartState> = (set, get) => ({
         }
     },
     addAddress: async (address) => {
-        set({ isAddressLoading: true })
         try {
             const res = await addAddress(address);
             set(state => ({
@@ -189,12 +188,9 @@ const store: StateCreator<CartState> = (set, get) => ({
             }))
         } catch (error) {
             console.log(error);
-        } finally {
-            set({ isAddressLoading: false })
-        }
+        } 
     },
     updateAddress: async ({ addressId, updateAddress }) => {
-        set({ isAddressLoading: true });
         const updatesavedAddresses = get().savedAddresses.map(address => address._id === addressId ? {
             ...address, ...updateAddress
         } : address);
@@ -206,9 +202,7 @@ const store: StateCreator<CartState> = (set, get) => ({
         } catch (error) {
             console.log(error);
         }
-        finally {
-            set({ isAddressLoading: false })
-        }
+    
     },
     deleteAddress: async (addressId) => {
         const allAddresses = get().savedAddresses;
