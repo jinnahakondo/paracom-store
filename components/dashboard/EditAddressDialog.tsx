@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Label } from '../ui/label'
@@ -39,6 +39,8 @@ export default function EditAddressDialog({
     editingAddress,
     setEditingAddress
 }: Props) {
+
+    const [isLoading, setIsLoading] = useState(false)
     const divisions = useMemo(() => Object.keys(BD_LOCATION_DATA), [])
 
     const {
@@ -76,13 +78,14 @@ export default function EditAddressDialog({
     }, [selectedDivision]);
 
     const updateAddress = useCartStore(s => s.updateAddress);
-    const isLoading = useCartStore(s => s.isAddressLoading);
+
 
 
     const onSubmit = async (data: AddressFormValues) => {
         if (!editingAddress?._id) return;
 
         try {
+            setIsLoading(true);
             await updateAddress(
                 {
                     addressId: String(editingAddress._id),
@@ -93,6 +96,8 @@ export default function EditAddressDialog({
             setIsEdit(false);
         } catch (error) {
             toast.error("Failed to update address");
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -242,7 +247,7 @@ export default function EditAddressDialog({
                             type='submit'
                             disabled={isLoading}
                         >
-                            Update Address
+                            {isLoading ? "updating..." : "Update Address"}
                         </Button>
                     </DialogFooter>
                 </form>

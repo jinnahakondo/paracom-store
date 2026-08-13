@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Plus } from 'lucide-react'
@@ -35,6 +35,9 @@ export default function AddAddressDialog({
     isAdd,
     setIsAdd,
 }: Props) {
+
+    const [isLoading, setIsLoading] = useState(false)
+
     const divisions = Object.keys(BD_LOCATION_DATA);
 
     const {
@@ -70,12 +73,14 @@ export default function AddAddressDialog({
 
     const onSubmit = async (data: AddressFormValues) => {
         try {
+            setIsLoading(true);
             await addAddress(data);
             toast.success("Address added successfully");
             setIsAdd(false)
+            reset();
         } catch (error) {
             toast.error("Failed to add address");
-        }
+        } finally { setIsLoading(false) }
     }
 
     return (
@@ -99,6 +104,7 @@ export default function AddAddressDialog({
                                 id="name"
                                 placeholder="e.g. John Doe"
                                 {...register('name')}
+                                disabled={isLoading}
 
                             />
                             {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
@@ -110,6 +116,7 @@ export default function AddAddressDialog({
                                 id="phone"
                                 placeholder="e.g. 01700000000"
                                 {...register('phone')}
+                                disabled={isLoading}
 
                             />
                             {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
@@ -131,7 +138,7 @@ export default function AddAddressDialog({
                                             setValue('district', '') // Reset district selection when division changes
                                         }}
                                         value={field.value}
-
+                                        disabled={isLoading}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select Division" />
@@ -159,6 +166,7 @@ export default function AddAddressDialog({
                                     <Select
                                         onValueChange={field.onChange}
                                         value={field.value}
+                                        disabled={isLoading}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select District" />
@@ -185,7 +193,7 @@ export default function AddAddressDialog({
                                 id="city"
                                 placeholder="e.g. Sadullapur"
                                 {...register('city')}
-
+                                disabled={isLoading}
                             />
                             {errors.city && <p className="text-xs text-red-500">{errors.city.message}</p>}
                         </div>
@@ -195,7 +203,7 @@ export default function AddAddressDialog({
                                 id="postalCode"
                                 placeholder="5710"
                                 {...register('postalCode')}
-
+                                disabled={isLoading}
                             />
                             {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode.message}</p>}
                         </div>
@@ -208,7 +216,7 @@ export default function AddAddressDialog({
                             id="address"
                             placeholder="House, road, locality..."
                             {...register('address')}
-
+                            disabled={isLoading}
                         />
                         {errors.address && <p className="text-xs text-red-500">{errors.address.message}</p>}
                     </div>
@@ -221,13 +229,16 @@ export default function AddAddressDialog({
                                 reset()
                                 setIsAdd(false)
                             }}
+                            disabled={isLoading}
                         >
                             Cancel
                         </Button>
                         <Button
 
                             type="submit"
-                        >Save Address</Button>
+                        >
+                            {isLoading ? "Address Saving..." : "Save Address"}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
