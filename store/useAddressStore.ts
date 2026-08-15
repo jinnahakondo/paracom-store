@@ -1,4 +1,4 @@
-import { addAddress, deleteAddress, getSavedAddresses, updateAddressApi } from "@/lib/fetchData";
+import { addAddress, deleteAddress, getSavedAddresses, setDefaultAddressApi, updateAddressApi } from "@/lib/fetchData";
 import { AddressType } from "@/types/types";
 import { create, StateCreator } from "zustand";
 import { devtools, persist } from "zustand/middleware";
@@ -8,7 +8,7 @@ interface AddressState {
     addAddress: (address: AddressType) => Promise<void>;
     updateAddress: ({ addressId, updateAddress }: { addressId: string, updateAddress: AddressType }) => Promise<void>;
     deleteAddress: (addressId: string) => Promise<void>;
-    setDefaultAddress?: (addressId: string) => Promise<void>;
+    setDefaultAddress: (addressId: string) => Promise<void>;
     fetchAddresses: () => Promise<void>;
     isAddressLoading: boolean;
 }
@@ -61,6 +61,21 @@ const store: StateCreator<AddressState> = (set, get) => ({
             await deleteAddress(addressId)
         } catch (error) {
             console.log(error);
+        }
+    },
+    setDefaultAddress: async (addressId) => {
+
+        set(state => ({
+            savedAddresses: state.savedAddresses.map(item => item._id === addressId ?
+                { ...item, isDefault: true } :
+                { ...item, isDefault: false }
+            )
+        }))
+        // db update 
+        try {
+            await setDefaultAddressApi(addressId)
+        } catch (error: any) {
+            console.log(error.message);
         }
     }
 })

@@ -6,12 +6,11 @@ import { Plus, MapPin, Pencil, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useSession } from "next-auth/react";
 import AddAddressDialog from "./AddAddressDialog";
 import EditAddressDialog from "./EditAddressDialog";
 import { toast } from "sonner";
 import { AddressType } from "@/types/types";
-import { useCartStore } from "@/store/useCartStore";
+import { useAddressState } from "@/store/useAddressStore";
 
 export default function SavedAddressesClient() {
 
@@ -20,10 +19,12 @@ export default function SavedAddressesClient() {
   const [isEdit, setIsEdit] = useState(false);
   const [editingAddress, setEditingAddress] = useState<AddressType | null>(null)
 
-  const fetchAddresses = useCartStore(s => s.fetchAddresses)
-  const savedAddresses = useCartStore(s => s.savedAddresses);
-  const deleteAddress = useCartStore(s => s.deleteAddress);
-  const isLoading = useCartStore(s => s.isAddressLoading);
+  const fetchAddresses = useAddressState(s => s.fetchAddresses)
+  const savedAddresses = useAddressState(s => s.savedAddresses);
+  const deleteAddress = useAddressState(s => s.deleteAddress);
+  const isLoading = useAddressState(s => s.isAddressLoading);
+  const setDefaultAddress = useAddressState(s => s.setDefaultAddress);
+
 
   useEffect(() => {
     fetchAddresses()
@@ -97,7 +98,7 @@ export default function SavedAddressesClient() {
               <CardFooter className="pt-2 flex items-center justify-between border-t border-border/50 mt-auto">
                 {!item.isDefault ? (
                   <Button
-                    // onClick={()}
+                    onClick={() => setDefaultAddress(String(item._id))}
                     variant="ghost"
                     size="sm"
                     className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"

@@ -12,12 +12,12 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { useCartStore } from '@/store/useCartStore'
 import { AddressType } from '@/types/types'
+import { useAddressState } from '@/store/useAddressStore'
 
 interface Props {
     isEdit: boolean
     setIsEdit: (open: boolean) => void
     editingAddress: AddressType | null;
-    setEditingAddress: (address: AddressType) => void;
 }
 
 const addressSchema = baseSchema.pick({
@@ -37,7 +37,6 @@ export default function EditAddressDialog({
     isEdit,
     setIsEdit,
     editingAddress,
-    setEditingAddress
 }: Props) {
 
     const [isLoading, setIsLoading] = useState(false)
@@ -77,7 +76,7 @@ export default function EditAddressDialog({
         return BD_LOCATION_DATA[selectedDivision as keyof typeof BD_LOCATION_DATA] || []
     }, [selectedDivision]);
 
-    const updateAddress = useCartStore(s => s.updateAddress);
+    const updateAddress = useAddressState(s => s.updateAddress);
 
 
 

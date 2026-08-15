@@ -11,7 +11,7 @@ import { baseSchema } from '@/lib/zod/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { useCartStore } from '@/store/useCartStore'
+import { useAddressState } from '@/store/useAddressStore'
 
 
 interface Props {
@@ -69,7 +69,7 @@ export default function AddAddressDialog({
         return BD_LOCATION_DATA[selectedDivision] || []
     }, [selectedDivision])
 
-    const addAddress = useCartStore(s => s.addAddress)
+    const addAddress = useAddressState(s => s.addAddress)
 
     const onSubmit = async (data: AddressFormValues) => {
         try {

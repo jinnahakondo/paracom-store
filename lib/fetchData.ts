@@ -165,6 +165,11 @@ export const deleteAddress = async (addressId: string) => {
     return res.data;
 }
 
+export const setDefaultAddressApi = async (addressId: string) => {
+    const res = await axiosInstance.patch('/api/save-address/default', { addressId });
+    return res.data;
+}
+
 
 
 

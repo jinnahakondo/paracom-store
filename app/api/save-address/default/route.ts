@@ -38,3 +38,64 @@ export async function GET(req: NextRequest) {
         });
     }
 }
+
+export async function PATCH(req: NextRequest) {
+    try {
+        await connectDb();
+
+        const { user } = await verifyAuth();
+        const { addressId } = await req.json();
+
+        if (!addressId) {
+            return response.error(
+                {
+                    message: "Address ID is required",
+                    status: 400
+                },
+            );
+        }
+
+        // Make all user's addresses non-default
+        await Address.updateMany(
+            { user: user.id },
+            { $set: { isDefault: false } }
+        );
+
+        // Make the selected address the default
+        const updatedAddress = await Address.findOneAndUpdate(
+            {
+                _id: addressId,
+                user: user.id,
+            },
+            { $set: { isDefault: true } },
+            { new: true }
+        );
+
+        if (!updatedAddress) {
+            return response.error(
+                {
+                    message: "Address not found",
+                    status: 404
+                },
+            );
+        }
+
+        return response.success(
+            {
+                message: "Default address updated successfully",
+                data: updatedAddress,
+                status: 200
+            },
+        );
+    } catch (error) {
+        console.error("Failed to update default address:", error);
+
+        return response.error(
+            {
+                message: "Something went wrong",
+                status: 500
+            },
+
+        );
+    }
+}
