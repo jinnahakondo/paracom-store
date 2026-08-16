@@ -13,6 +13,11 @@ interface AddressState {
     isAddressLoading: boolean;
 }
 
+const sortAddresses = (addresses: AddressType[]) =>
+    [...addresses].sort(
+        (a, b) => Number(b.isDefault) - Number(a.isDefault)
+    );
+
 const store: StateCreator<AddressState> = (set, get) => ({
     savedAddresses: [],
     isAddressLoading: true,
@@ -64,16 +69,19 @@ const store: StateCreator<AddressState> = (set, get) => ({
         }
     },
     setDefaultAddress: async (addressId) => {
+        const updatedAddresses = get().savedAddresses.map(address =>
+            address._id === addressId
+                ? { ...address, isDefault: true }
+                : { ...address, isDefault: false }
+        );
 
-        set(state => ({
-            savedAddresses: state.savedAddresses.map(item => item._id === addressId ?
-                { ...item, isDefault: true } :
-                { ...item, isDefault: false }
-            )
-        }))
-        // db update 
+        // Default address moves to first position
+        set({
+            savedAddresses: sortAddresses(updatedAddresses),
+        });
+
         try {
-            await setDefaultAddressApi(addressId)
+            await setDefaultAddressApi(addressId);
         } catch (error: any) {
             console.log(error.message);
         }

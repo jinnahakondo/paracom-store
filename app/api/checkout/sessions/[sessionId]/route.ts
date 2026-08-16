@@ -1,5 +1,6 @@
 import { verifyAuth } from "@/lib/auth/verifyAuth";
 import { connectDb } from "@/lib/db/db";
+import { response } from "@/lib/helperFunction";
 import { stripe } from "@/lib/stripe";
 import Order from "@/schemas/order.schema";
 import Product from "@/schemas/product.schema";
@@ -50,6 +51,8 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
             const shippingFee = subtotal >= 1000 ? 0 : 100;
 
+            const transactionId = session.payment_intent
+
             const newOrder = {
                 user: user.id,
                 products: orderItems,
@@ -58,11 +61,29 @@ export async function POST(req: NextRequest, { params }: IParams) {
                 totalAmount: subtotal + shippingFee,
                 payment: {
                     paymentStatus: "paid",
-                    transactionId: session.payment_intent,
+                    transactionId,
                 }
 
             }
-            // const result = await Order.create()
+
+            // check if already order created 
+            const existOrder = await Order.findOne({ "payment.transactionId": transactionId })
+            if (existOrder) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: "Order already created",
+                    },
+                    { status: 409 }
+                );
+            }
+
+            const result = await Order.create(newOrder);
+            return response.success({
+                message: "Order created",
+                status: 201,
+                data: result
+            })
         }
 
         return NextResponse.json({ success: true, sessionId })

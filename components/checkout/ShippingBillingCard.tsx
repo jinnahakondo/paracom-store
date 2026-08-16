@@ -3,11 +3,9 @@ import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/lib/axiosInstance";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useCartStore } from "@/store/useCartStore";
+import { useAddressState } from "@/store/useAddressStore";
 
 // Defined Interface matching your data contract
 export interface Address {
@@ -26,7 +24,7 @@ export default function ShippingBillingCard() {
     const { status } = useSession();
     const router = useRouter();
 
-    const defaultAddress = useCartStore(state => state.savedAddresses.find(address => address.isDefault))
+    const defaultAddress = useAddressState(state => state.savedAddresses.find(address => address.isDefault))
 
     if (!defaultAddress) {
         return (

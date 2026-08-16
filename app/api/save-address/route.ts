@@ -42,7 +42,7 @@ export async function GET() {
         const { user } = await verifyAuth();
         const result = await Address.find({
             user: user.id,
-        })
+        }).sort({ isDefault: -1 })
 
         return response.success({
             message: "saved addresses got",
