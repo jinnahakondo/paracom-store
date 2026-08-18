@@ -2,6 +2,7 @@ import { verifyAuth } from "@/lib/auth/verifyAuth";
 import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
 import { stripe } from "@/lib/stripe";
+import Cart from "@/schemas/cart.schema";
 import Order from "@/schemas/order.schema";
 import Product from "@/schemas/product.schema";
 import { CartItemType } from "@/types/types";
@@ -21,6 +22,21 @@ export async function POST(req: NextRequest, { params }: IParams) {
         const productIds = items.map((item: CartItemType) => item._id)
 
         const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+        const transactionId = session.payment_intent;
+
+
+        // check if already order created 
+        const existOrder = await Order.findOne({ "payment.transactionId": transactionId })
+        if (existOrder) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Order already created",
+                },
+                { status: 409 }
+            );
+        }
 
         if (session.payment_status === 'paid') {
 
@@ -51,8 +67,6 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
             const shippingFee = subtotal >= 1000 ? 0 : 100;
 
-            const transactionId = session.payment_intent
-
             const newOrder = {
                 user: user.id,
                 products: orderItems,
@@ -66,25 +80,24 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
             }
 
-            // check if already order created 
-            const existOrder = await Order.findOne({ "payment.transactionId": transactionId })
-            if (existOrder) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: "Order already created",
-                    },
-                    { status: 409 }
-                );
-            }
 
             const result = await Order.create(newOrder);
+            
+            // clear cart 
+            const itemIds = items.map((item: CartItemType) => item._id)
+
+            await Cart.deleteMany({
+                _id: { $in: itemIds }
+            })
+
             return response.success({
                 message: "Order created",
                 status: 201,
                 data: result
             })
         }
+
+
 
         return NextResponse.json({ success: true, sessionId })
     } catch (error: any) {
