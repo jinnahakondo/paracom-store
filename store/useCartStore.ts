@@ -136,15 +136,15 @@ const store: StateCreator<CartState> = (set, get) => ({
         const mergedMap = new Map();
 
         [...localCart, ...dbCart].forEach(item => {
-            const existing = mergedMap.get(item._id);
+            const existing = mergedMap.get(item.productId);
 
             if (existing) {
-                mergedMap.set(item._id, {
+                mergedMap.set(item.productId, {
                     ...item,
                     quantity: existing.quantity + item.quantity
                 });
             } else {
-                mergedMap.set(item._id, item);
+                mergedMap.set(item.productId, item);
             }
         })
 
@@ -160,10 +160,10 @@ const store: StateCreator<CartState> = (set, get) => ({
 
 
     },
-    toggleSelect: (itemId) => set(
+    toggleSelect: (productId) => set(
         (
             state => ({
-                cartItems: state.cartItems.map(item => item._id === itemId ?
+                cartItems: state.cartItems.map(item => item.productId=== productId ?
                     { ...item, isSelected: !item.isSelected }
                     :
                     item)
