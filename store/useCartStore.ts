@@ -8,7 +8,7 @@ import { addToCartDB, getDBCartData, mergeDBCart, removeDBCartItem, updateDBItem
 
 interface UpdateQuantity {
     status: boolean;
-    itemId: string;
+    productId: string;
     quantity?: number;
     type: 'INCREMENT' | 'DECREMENT' | 'QUANTITY'
 }
@@ -30,7 +30,7 @@ interface CartState {
 
     addToCart: ({ status, newItem }: AddToCart) => Promise<void>;
     removeCartItem: ({ status, productId }: IRemoveCartItem) => Promise<void>;
-    updateQuantity: ({ status, itemId, quantity, type }: UpdateQuantity) => Promise<void>;
+    updateQuantity: ({ status, productId, quantity, type }: UpdateQuantity) => Promise<void>;
     clearCart: (userId?: string | null) => void;
     mergeCartWithDb: () => Promise<void>;
     toggleSelect: (itemId: string) => void;
@@ -88,10 +88,10 @@ const store: StateCreator<CartState> = (set, get) => ({
             }
         }
     },
-    updateQuantity: async ({ status, itemId, quantity, type }) => {
+    updateQuantity: async ({ status, productId, quantity, type }) => {
         const currentItems = get().cartItems;
 
-        const updatedItems = currentItems.map(item => item._id === itemId ?
+        const updatedItems = currentItems.map(item => item.productId === productId ?
             {
                 ...item,
                 quantity: type === 'INCREMENT' ?
@@ -111,7 +111,7 @@ const store: StateCreator<CartState> = (set, get) => ({
         // update db cart item quantity 
         if (status) {
             try {
-                await updateDBItemQty({ itemId, type })
+                await updateDBItemQty({ productId, type })
             } catch (error) {
                 console.log(error);
             }

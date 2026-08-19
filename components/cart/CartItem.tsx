@@ -47,7 +47,7 @@ export function CartItem({ item }: ItemType) {
                         <Button
                             onClick={() => updateQuantity(
                                 {
-                                    itemId: String(item?._id),
+                                    productId: String(item?.productId),
                                     status: status === 'authenticated',
                                     type: "DECREMENT"
                                 }
@@ -66,7 +66,7 @@ export function CartItem({ item }: ItemType) {
                         <Button
                             onClick={() => updateQuantity(
                                 {
-                                    itemId: String(item?._id),
+                                    productId: String(item?.productId),
                                     status: status === 'authenticated',
                                     type: "INCREMENT"
                                 }

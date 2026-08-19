@@ -1,9 +1,8 @@
 import { AddressType, CartItemType, CategoryType, ProductType } from "@/types/types";
 import axiosInstance from "./axiosInstance";
-import { Address } from "@/components/dashboard/SavedAddressesClient";
 
 interface UpdateDBItemQty {
-    itemId: string,
+    productId: string,
     quantity?: number,
     type: 'INCREMENT' | 'DECREMENT' | 'QUANTITY'
 }
@@ -123,10 +122,10 @@ export const removeDBCartItem = async (productId: string) => {
 
 }
 
-export const updateDBItemQty = async ({ itemId, quantity, type }: UpdateDBItemQty) => {
+export const updateDBItemQty = async ({ productId, quantity, type }: UpdateDBItemQty) => {
     const res = await axiosInstance.patch(
         '/api/cart/quantity',
-        { quantity, type, product: itemId }
+        { quantity, type, product: productId }
     )
 
 
