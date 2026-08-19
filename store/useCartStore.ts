@@ -36,6 +36,7 @@ interface CartState {
     toggleSelect: (itemId: string) => void;
     toggleSelectAll: (isSelected: boolean) => void;
     getSelectedItems: () => CartItemType[];
+    getSelectedTotalPrice: () => number;
 }
 
 
@@ -176,6 +177,10 @@ const store: StateCreator<CartState> = (set, get) => ({
     ),
     getSelectedItems: () => {
         return get().cartItems.filter(item => item.isSelected);
+    },
+    getSelectedTotalPrice: () => {
+        return get().cartItems.filter(item => item.isSelected)
+            .reduce((sum, item) => sum + item.price * item.quantity, 0)
     }
 
 })
