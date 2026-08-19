@@ -34,8 +34,8 @@ interface CartState {
     clearCart: (userId?: string | null) => void;
     mergeCartWithDb: () => Promise<void>;
     toggleSelect: (itemId: string) => void;
-    toggleSelectAll: (isSelected:boolean) => void;
-
+    toggleSelectAll: (isSelected: boolean) => void;
+    getSelectedItems: () => CartItemType[];
 }
 
 
@@ -173,7 +173,10 @@ const store: StateCreator<CartState> = (set, get) => ({
         state => ({
             cartItems: state.cartItems.map(item => ({ ...item, isSelected: isSelected }))
         })
-    )
+    ),
+    getSelectedItems: () => {
+        return get().cartItems.filter(item => item.isSelected);
+    }
 
 })
 
