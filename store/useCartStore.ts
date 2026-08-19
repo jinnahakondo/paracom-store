@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { StateCreator } from "zustand";
-import { AddressType, CartItemType } from '@/types/types';
-import { addAddress, addToCartDB, deleteAddress, getDBCartData, getSavedAddresses, mergeDBCart, removeDBCartItem, updateAddressApi, updateDBItemQty } from '@/lib/fetchData';
+import { CartItemType } from '@/types/types';
+import { addToCartDB, getDBCartData, mergeDBCart, removeDBCartItem, updateDBItemQty } from '@/lib/fetchData';
 
 
 
@@ -33,6 +33,9 @@ interface CartState {
     updateQuantity: ({ status, itemId, quantity, type }: UpdateQuantity) => Promise<void>;
     clearCart: (userId?: string | null) => void;
     mergeCartWithDb: () => Promise<void>;
+    toggleSelect: (itemId: string) => void;
+    toggleSelectAll: (isSelected:boolean) => void;
+
 }
 
 
@@ -156,7 +159,21 @@ const store: StateCreator<CartState> = (set, get) => ({
 
 
     },
-
+    toggleSelect: (itemId) => set(
+        (
+            state => ({
+                cartItems: state.cartItems.map(item => item._id === itemId ?
+                    { ...item, isSelected: !item.isSelected }
+                    :
+                    item)
+            })
+        )
+    ),
+    toggleSelectAll: (isSelected) => set(
+        state => ({
+            cartItems: state.cartItems.map(item => ({ ...item, isSelected: isSelected }))
+        })
+    )
 
 })
 
