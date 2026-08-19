@@ -36,10 +36,12 @@ export interface ProductType<TCategory = string> {
 
 export interface CartItemType {
   _id?: string;
+  productId: string;
   title: string;
   image: string;
   price: number;
   quantity: number;
+  isSelected: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

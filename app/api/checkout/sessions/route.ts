@@ -1,4 +1,5 @@
 import { verifyAuth } from "@/lib/auth/verifyAuth";
+import { connectDb } from "@/lib/db/db";
 import { stripe } from "@/lib/stripe";
 import { CartItemType } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,6 +8,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
+        await connectDb();
+        const { user } = await verifyAuth();
+
         const { items } = await req.json();
 
         if (!Array.isArray(items) || items.length === 0) {
@@ -15,6 +19,9 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             );
         }
+
+        // take  cart items id []
+        const cartItemIds = items.map((item: CartItemType) => item._id);
 
         const line_items = items.map((item: CartItemType) => ({
             price_data: {
@@ -27,8 +34,6 @@ export async function POST(req: NextRequest) {
             },
             quantity: item.quantity,
         }));
-
-        const { user } = await verifyAuth();
 
         // Create Checkout Sessions from body params.
         const session = await stripe.checkout.sessions.create({
@@ -50,6 +55,7 @@ export async function POST(req: NextRequest) {
             customer_email: String(user.email),
             metadata: {
                 userId: String(user.id),
+                cartItemIds: JSON.stringify(cartItemIds),
             },
             success_url: `${process.env.BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.BASE_URL}/checkout`

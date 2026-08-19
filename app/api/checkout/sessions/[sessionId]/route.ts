@@ -21,7 +21,9 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
         const productIds = items.map((item: CartItemType) => item._id)
 
-        const session = await stripe.checkout.sessions.retrieve(sessionId)
+        const session = await stripe.checkout.sessions.retrieve(sessionId,{
+            expand:["line_items.data.price.product"]
+        })
 
         const transactionId = session.payment_intent;
 
@@ -82,7 +84,7 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
 
             const result = await Order.create(newOrder);
-            
+
             // clear cart 
             const itemIds = items.map((item: CartItemType) => item._id)
 

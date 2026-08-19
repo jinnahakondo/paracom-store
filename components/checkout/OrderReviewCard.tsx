@@ -63,7 +63,6 @@ export default function OrderReviewCard() {
                                     </div>
 
                                     {/* Quantity Actions */}
-
                                     <div className="inline-flex items-center border border-border/80 bg-muted/40 rounded-lg p-0.5">
                                         <Button
                                             variant="ghost"
