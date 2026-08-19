@@ -45,12 +45,12 @@ export async function POST(req: NextRequest) {
         await connectDb();
         const { user } = await verifyAuth();
 
-        const { product, quantity = 1 }: ItemType = await req.json();
+        const { productId, quantity = 1 }: ItemType = await req.json();
 
         const result = await Cart.findOneAndUpdate(
             {
                 user: user.id,
-                product
+                product: productId
             },
             {
                 $inc: { quantity }

@@ -92,7 +92,7 @@ export function CartItem({ item }: ItemType) {
                 onClick={() => removeCartItem(
                     {
                         status: status === 'authenticated',
-                        itemId: String(item?._id)
+                        productId: String(item?.productId)
                     }
                 )}
                 variant="ghost"

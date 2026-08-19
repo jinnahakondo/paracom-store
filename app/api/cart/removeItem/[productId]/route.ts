@@ -5,7 +5,7 @@ import Cart from "@/schemas/cart.schema";
 import { NextRequest } from "next/server";
 
 type Props = {
-    params: Promise<{ itemId: string }>
+    params: Promise<{ productId: string }>
 }
 
 export async function DELETE(req: NextRequest, { params }: Props) {
@@ -13,12 +13,13 @@ export async function DELETE(req: NextRequest, { params }: Props) {
 
         await connectDb();
         const { user } = await verifyAuth();
-        const { itemId } = await params;
+        const { productId } = await params;
+        console.log(productId);
 
         const result = await Cart.findOneAndDelete(
             {
                 user: user.id,
-                product: itemId
+                product: productId
             }
         )
 

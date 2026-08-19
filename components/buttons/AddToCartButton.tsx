@@ -20,11 +20,12 @@ export default function AddToCartButton({ product }: Props) {
     const addToCart = useCartStore(state => state.addToCart)
 
     const newCartItem: CartItemType = {
-        _id: product._id,
+        productId: product._id,
         title: product.title,
         image: product.images[0],
         price: product.price,
-        quantity: 1
+        quantity: 1,
+        isSelected: false
     }
 
     return (

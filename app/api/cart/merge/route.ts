@@ -6,7 +6,7 @@ import { CartItemType } from "@/types/types";
 import { NextRequest } from "next/server";
 
 export interface ItemType {
-    product: string,
+    productId: string,
     quantity: number,
 }
 
