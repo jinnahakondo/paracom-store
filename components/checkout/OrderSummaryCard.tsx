@@ -13,14 +13,12 @@ import { handleCheckout } from "@/lib/fetchData";
 export default function OrderSummaryCard() {
 
     const deleveryFee = 50;
-    const cartItems = useCartStore(state => state.cartItems);
-    const totalPrice = cartItems.reduce((total, item) => {
-        return total + (Number(item.price) * Number(item.quantity))
-    }, 0)
+    const getSelectedItems = useCartStore(state => state.getSelectedItems);
+    const getSelectedTotalPrice = useCartStore(state => state.getSelectedTotalPrice);
 
     const onCheckout = async () => {
         try {
-            const data = await handleCheckout(cartItems);
+            const data = await handleCheckout(getSelectedItems());
 
             if (data.url) {
                 window.location.href = data.url;
@@ -59,11 +57,11 @@ export default function OrderSummaryCard() {
                 <div className="space-y-4 text-sm md:text-base font-medium">
                     <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">
-                            Items Total ({cartItems.length} Items)
+                            Items Total ({getSelectedItems().length} Items)
                         </span>
                         <span className="font-semibold flex items-center">
                             <FaBangladeshiTakaSign />
-                            <span>{totalPrice}</span>
+                            <span>{getSelectedTotalPrice()}</span>
                         </span>
                     </div>
 
@@ -85,7 +83,7 @@ export default function OrderSummaryCard() {
                         <span className="text-lg font-semibold">Total:</span>
                         <span className=" md:text-xl font-extrabold text-primary tracking-tight flex items-center">
                             <FaBangladeshiTakaSign />
-                            <span>{totalPrice + deleveryFee}</span>
+                            <span>{getSelectedTotalPrice() + deleveryFee}</span>
                         </span>
                     </div>
 

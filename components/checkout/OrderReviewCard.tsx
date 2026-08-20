@@ -12,7 +12,7 @@ export default function OrderReviewCard() {
 
     const { status } = useSession();
 
-    const cartItems = useCartStore(state => state.cartItems);
+    const getSelectedItems = useCartStore(state => state.getSelectedItems);
 
     const updateQuantity = useCartStore(state => state.updateQuantity);
 
@@ -38,7 +38,7 @@ export default function OrderReviewCard() {
 
                 {/* Product Items List */}
                 <div className="space-y-4">
-                    {cartItems.map((item) => (
+                    {getSelectedItems().map((item) => (
                         <div
                             key={item._id}
                             className={`flex items-center justify-between rounded-xl transition-all border border-transparent bg-transparent`}
