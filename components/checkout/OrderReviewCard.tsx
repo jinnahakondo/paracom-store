@@ -16,7 +16,7 @@ export default function OrderReviewCard() {
 
     const updateQuantity = useCartStore(state => state.updateQuantity);
 
-    const removeCartItem = useCartStore(state => state.removeCartItem)
+    const toggleSelect = useCartStore(state => state.toggleSelect)
 
     const formatBDT = (amount: number) => {
         return new Intl.NumberFormat("en-BD", {
@@ -69,7 +69,7 @@ export default function OrderReviewCard() {
                                             size="icon"
                                             className="h-7 w-7 rounded-md font-semibold text-muted-foreground hover:bg-background"
                                             onClick={() => updateQuantity({
-                                                itemId: String(item?._id),
+                                                productId: String(item?.productId),
                                                 status: status === "authenticated",
                                                 type: 'DECREMENT'
                                             })}
@@ -84,7 +84,7 @@ export default function OrderReviewCard() {
                                             size="icon"
                                             className="h-7 w-7 rounded-md font-semibold text-muted-foreground hover:bg-background"
                                             onClick={() => updateQuantity({
-                                                itemId: String(item?._id),
+                                                productId: String(item?.productId),
                                                 status: status === "authenticated",
                                                 type: 'INCREMENT'
                                             })}
@@ -109,12 +109,10 @@ export default function OrderReviewCard() {
                                 <div className="flex justify-end">
 
                                     <Button
+                                        disabled={getSelectedItems().length <= 1}
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => removeCartItem({
-                                            status: status === 'authenticated',
-                                            itemId: String(item._id)
-                                        })}
+                                        onClick={() => toggleSelect(item.productId)}
                                         className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10 rounded-md"
                                     >
                                         <Trash2 className="w-4 h-4" />

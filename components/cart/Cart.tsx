@@ -69,7 +69,7 @@ export default function Cart() {
 
                 <div className="space-y-4 mt-4 overflow-y-auto">
                     {cart.map((item: CartItemType) => <CartItem
-                        key={item._id}
+                        key={item.productId}
                         item={item}
                     />)}
                 </div>
