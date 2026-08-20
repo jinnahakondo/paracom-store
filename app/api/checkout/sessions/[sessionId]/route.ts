@@ -17,16 +17,13 @@ export async function POST(req: NextRequest, { params }: IParams) {
         await connectDb()
         const { user } = await verifyAuth()
         const { sessionId } = await params;
-        const { items } = await req.json()
+        const { items } = await req.json();
 
-        const productIds = items.map((item: CartItemType) => item._id)
+        const session = await stripe.checkout.sessions.retrieve(sessionId)
 
-        const session = await stripe.checkout.sessions.retrieve(sessionId,{
-            expand:["line_items.data.price.product"]
-        })
+        const productIds = JSON.parse(session.metadata!.productIds);
 
         const transactionId = session.payment_intent;
-
 
         // check if already order created 
         const existOrder = await Order.findOne({ "payment.transactionId": transactionId })
@@ -47,8 +44,10 @@ export async function POST(req: NextRequest, { params }: IParams) {
                 { _id: { $in: productIds } }
             )
 
+            console.log({ items, dbProducts });
+
             const orderItems = items.map((item: CartItemType) => {
-                const product = dbProducts.find(p => String(p._id) === item._id)
+                const product = dbProducts.find(p => String(p._id) === item.productId)
                 if (!product) {
                     throw new Error("Product not found")
                 }
@@ -67,7 +66,8 @@ export async function POST(req: NextRequest, { params }: IParams) {
                 0
             );
 
-            const shippingFee = subtotal >= 1000 ? 0 : 100;
+            // const shippingFee = subtotal >= 1000 ? 0 : 100;
+            const shippingFee = 50;
 
             const newOrder = {
                 user: user.id,

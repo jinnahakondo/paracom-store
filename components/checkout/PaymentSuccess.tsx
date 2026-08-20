@@ -15,7 +15,8 @@ export default function PaymentSuccess() {
 
   const sessionId = searchParams.get("session_id");
 
-  const items = useCartStore((state) => state.cartItems);
+  const getSelectedItems = useCartStore((state) => state.getSelectedItems);
+  const items = getSelectedItems()
 
   const [countdown, setCountdown] = useState(5);
 
@@ -29,21 +30,21 @@ export default function PaymentSuccess() {
       });
   }, [sessionId, items]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          router.replace("/orders");
-          return 0;
-        }
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCountdown((prev) => {
+  //       if (prev <= 1) {
+  //         clearInterval(interval);
+  //         router.replace("/orders");
+  //         return 0;
+  //       }
 
-        return prev - 1;
-      });
-    }, 1000);
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, [router]);
+  //   return () => clearInterval(interval);
+  // }, [router]);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4 md:p-8">

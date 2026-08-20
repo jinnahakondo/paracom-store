@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         }
 
         // take  cart items id []
-        const cartItemIds = items.map((item: CartItemType) => item._id);
+        const productIds = items.map((item: CartItemType) => item.productId);
 
         const line_items = items.map((item: CartItemType) => ({
             price_data: {
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
             customer_email: String(user.email),
             metadata: {
                 userId: String(user.id),
-                cartItemIds: JSON.stringify(cartItemIds),
+                productIds: JSON.stringify(productIds),
             },
             success_url: `${process.env.BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.BASE_URL}/checkout`
