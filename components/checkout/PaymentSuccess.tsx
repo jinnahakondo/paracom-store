@@ -15,20 +15,18 @@ export default function PaymentSuccess() {
 
   const sessionId = searchParams.get("session_id");
 
-  const getSelectedItems = useCartStore((state) => state.getSelectedItems);
-  const items = getSelectedItems()
 
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    if (!sessionId || items.length === 0) return;
+    if (!sessionId) return;
 
     axiosInstance
-      .post(`/api/checkout/sessions/${sessionId}`, { items })
+      .post(`/api/checkout/sessions/${sessionId}`)
       .catch((error) => {
         console.log(error.message);
       });
-  }, [sessionId, items]);
+  }, [sessionId]);
 
   // useEffect(() => {
   //   const interval = setInterval(() => {

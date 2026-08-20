@@ -60,9 +60,10 @@ const orderSchema = new Schema(
     shippingAddress: {
       name: String,
       phone: String,
-      address: String,
+      fullAddress: String,
       city: String,
       postalCode: String,
+      additionalInfo: String,
     },
   },
   {

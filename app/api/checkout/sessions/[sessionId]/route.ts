@@ -2,6 +2,7 @@ import { verifyAuth } from "@/lib/auth/verifyAuth";
 import { connectDb } from "@/lib/db/db";
 import { response } from "@/lib/helperFunction";
 import { stripe } from "@/lib/stripe";
+import Address from "@/schemas/addressSchema";
 import Cart from "@/schemas/cart.schema";
 import Order from "@/schemas/order.schema";
 import Product from "@/schemas/product.schema";
@@ -81,6 +82,22 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
         const shippingFee = 50;
 
+        //7. Take default address from db
+        const address = await Address.findOne({
+            user: user.id,
+            isDefault: true
+        })
+
+        // format & filter address info (without undefined , null or empty feild )
+        const addressParts = [
+            address.additionalInfo,
+            `${address.city} ${address.postalCode}`.trim(),
+            address.district,
+            address.division
+        ].filter(Boolean);
+
+        const fullAddress = addressParts.join(', ');
+
         const newOrder = {
             user: user.id,
             products: orderItems,
@@ -90,13 +107,22 @@ export async function POST(req: NextRequest, { params }: IParams) {
             payment: {
                 paymentStatus: "paid",
                 transactionId,
+            },
+            shippingAddress: {
+                name: address.name,
+                phone: address.phone,
+                division: address.division,
+                district: address.district,
+                city: address.city,
+                fullAddress,
             }
         };
 
-        // 7. Persist order into Database
+
+        // 8. Persist order into Database
         const result = await Order.create(newOrder);
 
-        // 8. Delete ordered items from user's cart
+        // 9. Delete ordered items from user's cart
         await Cart.deleteMany({
             user: user.id,
             product: { $in: productIds }

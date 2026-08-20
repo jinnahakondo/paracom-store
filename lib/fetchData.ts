@@ -178,8 +178,7 @@ export const handleCheckout = async (
     checkoutItems: CartItemType[]
 ) => {
     const res = await axiosInstance.post(
-        "/api/checkout/sessions",
-        { items: checkoutItems }
+        "/api/checkout/sessions"
     );
 
     return res.data;
