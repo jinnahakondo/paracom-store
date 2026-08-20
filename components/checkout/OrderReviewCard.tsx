@@ -40,7 +40,7 @@ export default function OrderReviewCard() {
                 <div className="space-y-4">
                     {getSelectedItems().map((item) => (
                         <div
-                            key={item._id}
+                            key={item.productId}
                             className={`flex items-center justify-between rounded-xl transition-all border border-transparent bg-transparent`}
                         >
                             {/* Product Info & Thumbnail */}

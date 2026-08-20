@@ -32,6 +32,7 @@ interface CartState {
     removeCartItem: ({ status, productId }: IRemoveCartItem) => Promise<void>;
     updateQuantity: ({ status, productId, quantity, type }: UpdateQuantity) => Promise<void>;
     clearCart: (userId?: string | null) => void;
+    deleteSelectedCartItem: () => void;
     mergeCartWithDb: () => Promise<void>;
     toggleSelect: (productId: string) => void;
     toggleSelectAll: (isSelected: boolean) => void;
@@ -163,7 +164,7 @@ const store: StateCreator<CartState> = (set, get) => ({
     toggleSelect: (productId) => set(
         (
             state => ({
-                cartItems: state.cartItems.map(item => item.productId=== productId ?
+                cartItems: state.cartItems.map(item => item.productId === productId ?
                     { ...item, isSelected: !item.isSelected }
                     :
                     item)
@@ -181,7 +182,12 @@ const store: StateCreator<CartState> = (set, get) => ({
     getSelectedTotalPrice: () => {
         return get().cartItems.filter(item => item.isSelected)
             .reduce((sum, item) => sum + item.price * item.quantity, 0)
-    }
+    },
+    deleteSelectedCartItem: () => set(
+        state => ({
+            cartItems: state.cartItems.filter(item => !item.isSelected)
+        })
+    )
 
 })
 
