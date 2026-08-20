@@ -9,14 +9,16 @@ import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { CartItemType } from "@/types/types";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
+import { Checkbox } from "../ui/checkbox";
+import { Trash2 } from "lucide-react";
 
 
 export default function Cart() {
 
     const cart = useCartStore(state => state.cartItems);
-    const totalPrice = cart.reduce((total, item) => {
-        return total + (Number(item.price) * Number(item.quantity))
-    }, 0)
+    const toggleSelectAll = useCartStore(state => state.toggleSelectAll);
+    const getTotalPrice = useCartStore(state => state.getSelectedTotalPrice);
+    const totalPrice = getTotalPrice()
 
     const router = useRouter()
 
@@ -44,6 +46,25 @@ export default function Cart() {
                         </div>
                     </div>
                 }
+                {/* toggle select all item  */}
+                <div className="flex items-center justify-between max-w-md w-full p-2 mt-4">
+                    <div className="flex items-center gap-4 ">
+                        <Checkbox
+                            onCheckedChange={
+                                (checked) => toggleSelectAll(Boolean(checked))
+                            }
+                        />
+                        <p className="text-accent-foreground">
+                            Select All ({cart.length} items)
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        <Trash2 size={16} />
+                        Delete
+                    </div>
+                </div>
+
                 {/* cart data */}
 
                 <div className="space-y-4 mt-4 overflow-y-auto">
@@ -66,6 +87,7 @@ export default function Cart() {
                         &&
                         <DrawerClose asChild>
                             <Button
+                                disabled={totalPrice < 1}
                                 onClick={() => {
                                     router.push('/checkout')
                                 }}
