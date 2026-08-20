@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import { useSession } from "next-auth/react";
 import { CartItemType } from "@/types/types";
+import { Checkbox } from "../ui/checkbox";
+import { useState } from "react";
 
 interface ItemType {
     item: CartItemType
@@ -14,15 +16,24 @@ interface ItemType {
 
 export function CartItem({ item }: ItemType) {
 
+
     const { status } = useSession()
 
     const removeCartItem = useCartStore(state => state.removeCartItem);
     const updateQuantity = useCartStore(state => state.updateQuantity);
+    const toggleSelectItem = useCartStore(state => state.toggleSelect);
 
     const totalPrice = Math.round(item.price * item.quantity)
 
     return (
         <div className="flex items-center gap-4 rounded-xl border bg-card p-2 shadow-sm max-w-md w-full relative group">
+            {/* checkbox  */}
+            <Checkbox
+                checked={item.isSelected}
+                onCheckedChange={
+                    () => toggleSelectItem(item.productId)
+                } />
+
             {/* Product Image Wrapper */}
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border bg-muted p-1">
                 <Image

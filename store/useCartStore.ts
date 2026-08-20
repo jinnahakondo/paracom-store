@@ -33,7 +33,7 @@ interface CartState {
     updateQuantity: ({ status, productId, quantity, type }: UpdateQuantity) => Promise<void>;
     clearCart: (userId?: string | null) => void;
     mergeCartWithDb: () => Promise<void>;
-    toggleSelect: (itemId: string) => void;
+    toggleSelect: (productId: string) => void;
     toggleSelectAll: (isSelected: boolean) => void;
     getSelectedItems: () => CartItemType[];
     getSelectedTotalPrice: () => number;
