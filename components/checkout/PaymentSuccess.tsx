@@ -15,7 +15,6 @@ export default function PaymentSuccess() {
   const sessionId = searchParams.get("session_id");
   const removeOrderedItem = useCartStore((state) => state.deleteSelectedCartItem);
 
-  const [countdown, setCountdown] = useState(5);
   const isApiCalled = useRef(false); // Prevents duplicate API calls in React Strict Mode
 
   // 1. Process Order Creation & Clear Cart State
@@ -35,22 +34,6 @@ export default function PaymentSuccess() {
       });
   }, [sessionId]);
 
-  // 2. Redirect Countdown Timer Logic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          router.replace("/orders");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [router]);
-
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4 md:p-8">
       <Card className="w-full max-w-md border-border shadow-lg">
@@ -65,11 +48,6 @@ export default function PaymentSuccess() {
 
           <p className="text-sm text-muted-foreground mt-2">
             Thank you for your purchase.
-          </p>
-
-          <p className="text-sm text-muted-foreground mt-4">
-            Redirecting to your orders in{" "}
-            <span className="font-bold text-primary">{countdown}</span> seconds...
           </p>
 
           <Link

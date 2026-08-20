@@ -88,10 +88,17 @@ export async function POST(req: NextRequest, { params }: IParams) {
             isDefault: true
         })
 
-        // format & filter address info (without undefined , null or empty feild )
+        if (!address) {
+            return NextResponse.json(
+                { error: "No shipping address found for this user" },
+                { status: 400 }
+            );
+        }
+
+        // Format and filter valid address text segments
         const addressParts = [
             address.additionalInfo,
-            `${address.city} ${address.postalCode}`.trim(),
+            `${address.city || ''} ${address.postalCode || ''}`.trim(),
             address.district,
             address.division
         ].filter(Boolean);
@@ -114,13 +121,12 @@ export async function POST(req: NextRequest, { params }: IParams) {
                 division: address.division,
                 district: address.district,
                 city: address.city,
+                postalCode: address.postalCode || "",
                 fullAddress,
             }
         };
 
         console.log({ address, fullAddress, newOrder });
-
-
 
         // 8. Persist order into Database
         const result = await Order.create(newOrder);
