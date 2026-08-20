@@ -4,25 +4,22 @@ import { StateCreator } from "zustand";
 import { CartItemType } from '@/types/types';
 import { addToCartDB, getDBCartData, mergeDBCart, removeDBCartItem, updateDBItemQty } from '@/lib/fetchData';
 
-
-
 interface UpdateQuantity {
     status: boolean;
     productId: string;
     quantity?: number;
-    type: 'INCREMENT' | 'DECREMENT' | 'QUANTITY'
+    type: 'INCREMENT' | 'DECREMENT' | 'QUANTITY';
 }
 
 interface AddToCart {
-    status: boolean,
-    newItem: CartItemType
+    status: boolean;
+    newItem: CartItemType;
 }
 
 interface IRemoveCartItem {
-    status: boolean,
-    productId: string
+    status: boolean;
+    productId: string;
 }
-
 
 interface CartState {
     cartItems: CartItemType[];
@@ -31,7 +28,7 @@ interface CartState {
     addToCart: ({ status, newItem }: AddToCart) => Promise<void>;
     removeCartItem: ({ status, productId }: IRemoveCartItem) => Promise<void>;
     updateQuantity: ({ status, productId, quantity, type }: UpdateQuantity) => Promise<void>;
-    clearCart: (userId?: string | null) => void;
+    clearCart: () => void;
     deleteSelectedCartItem: () => void;
     mergeCartWithDb: () => Promise<void>;
     toggleSelect: (productId: string) => void;
@@ -40,157 +37,146 @@ interface CartState {
     getSelectedTotalPrice: () => number;
 }
 
-
-
 const store: StateCreator<CartState> = (set, get) => ({
     cartItems: [],
-    totalPrice: 0,
     isLoading: false,
 
     addToCart: async ({ status, newItem }) => {
         const currentItems = get().cartItems;
-
         const existingItem = currentItems.find(item => item.productId === newItem.productId);
 
-        const updatedItems = existingItem ?
-            currentItems.map(item => item.productId === newItem.productId ?
-                { ...item, quantity: item.quantity + 1 }
-                :
-                item
+        const updatedItems = existingItem
+            ? currentItems.map(item =>
+                item.productId === newItem.productId
+                    ? { ...item, quantity: item.quantity + 1 }
+                    : item
             )
-            :
-            [...currentItems, newItem];
+            : [...currentItems, newItem];
 
-        set({ cartItems: updatedItems })
+        set({ cartItems: updatedItems });
 
-
-        // db update 
+        // Update database if authenticated
         if (status) {
             try {
-                await addToCartDB({ productId: String(newItem.productId) })
+                await addToCartDB({ productId: String(newItem.productId) });
             } catch (error) {
-                console.error(error);
+                console.error("Add to cart DB error:", error);
             }
         }
     },
+
     removeCartItem: async ({ status, productId }) => {
-        set(state => (
-            {
-                cartItems: state.cartItems.filter(item => item.productId !== productId)
-            }
-        ));
+        set(state => ({
+            cartItems: state.cartItems.filter(item => item.productId !== productId)
+        }));
 
-        // remove item from db 
+        // Remove item from database if authenticated
         if (status) {
             try {
-                await removeDBCartItem(productId)
+                await removeDBCartItem(productId);
             } catch (error) {
-                console.log(error);
+                console.error("Remove cart item DB error:", error);
             }
         }
     },
+
     updateQuantity: async ({ status, productId, quantity, type }) => {
         const currentItems = get().cartItems;
 
-        const updatedItems = currentItems.map(item => item.productId === productId ?
-            {
-                ...item,
-                quantity: type === 'INCREMENT' ?
-                    item.quantity + 1
-                    :
-                    type === 'DECREMENT' ?
-                        Math.max(1, item.quantity - 1)
-                        :
-                        quantity ?? item.quantity
-            }
-            :
-            item
+        const updatedItems = currentItems.map(item =>
+            item.productId === productId
+                ? {
+                    ...item,
+                    quantity:
+                        type === 'INCREMENT'
+                            ? item.quantity + 1
+                            : type === 'DECREMENT'
+                                ? Math.max(1, item.quantity - 1)
+                                : quantity ?? item.quantity
+                }
+                : item
         );
 
-        set({ cartItems: updatedItems })
+        set({ cartItems: updatedItems });
 
-        // update db cart item quantity 
+        // Update database item quantity if authenticated
         if (status) {
             try {
-                await updateDBItemQty({ productId, type })
+                await updateDBItemQty({ productId, type });
             } catch (error) {
-                console.log(error);
+                console.error("Update DB item qty error:", error);
             }
         }
-
     },
-    clearCart: (userId) => {
-        set({ cartItems: [] })
+
+    clearCart: () => {
+        set({ cartItems: [] });
+    },
+
+    deleteSelectedCartItem: () => {
+        set(state => ({
+            cartItems: state.cartItems.filter(item => !item.isSelected)
+        }));
     },
 
     mergeCartWithDb: async () => {
-
-
-        const localCart = get().cartItems;
-
-        const { data } = await getDBCartData();
-
-        const dbCart = data ?? [];
-
-
-        // maping local cart items and database cartItems without duplicate
-        const mergedMap = new Map();
-
-        [...localCart, ...dbCart].forEach(item => {
-            const existing = mergedMap.get(item.productId);
-
-            if (existing) {
-                mergedMap.set(item.productId, {
-                    ...item,
-                    quantity: existing.quantity + item.quantity
-                });
-            } else {
-                mergedMap.set(item.productId, item);
-            }
-        })
-
-        // making an arry with mergedMap values 
-        const mergedCart = Array.from(mergedMap.values())
-        set({ cartItems: mergedCart });
-        // save merged data in db 
+        set({ isLoading: true });
         try {
-            await mergeDBCart(mergedCart)
+            const localCart = get().cartItems;
+            const { data } = await getDBCartData();
+            const dbCart: CartItemType[] = data ?? [];
+
+            // Merge local and database items based on productId
+            const mergedMap = new Map<string, CartItemType>();
+
+            [...localCart, ...dbCart].forEach(item => {
+                const existing = mergedMap.get(item.productId);
+                if (existing) {
+                    mergedMap.set(item.productId, {
+                        ...item,
+                        quantity: existing.quantity + item.quantity
+                    });
+                } else {
+                    mergedMap.set(item.productId, item);
+                }
+            });
+
+            const mergedCart = Array.from(mergedMap.values());
+            set({ cartItems: mergedCart });
+
+            // Persist merged items to database
+            await mergeDBCart(mergedCart);
         } catch (error) {
-            console.log(error);
+            console.error("Merge cart error:", error);
+        } finally {
+            set({ isLoading: false });
         }
-
-
     },
-    toggleSelect: (productId) => set(
-        (
-            state => ({
-                cartItems: state.cartItems.map(item => item.productId === productId ?
-                    { ...item, isSelected: !item.isSelected }
-                    :
-                    item)
-            })
-        )
-    ),
-    toggleSelectAll: (isSelected) => set(
-        state => ({
-            cartItems: state.cartItems.map(item => ({ ...item, isSelected: isSelected }))
-        })
-    ),
+
+    toggleSelect: (productId) =>
+        set(state => ({
+            cartItems: state.cartItems.map(item =>
+                item.productId === productId
+                    ? { ...item, isSelected: !item.isSelected }
+                    : item
+            )
+        })),
+
+    toggleSelectAll: (isSelected) =>
+        set(state => ({
+            cartItems: state.cartItems.map(item => ({ ...item, isSelected }))
+        })),
+
     getSelectedItems: () => {
         return get().cartItems.filter(item => item.isSelected);
     },
+
     getSelectedTotalPrice: () => {
-        return get().cartItems.filter(item => item.isSelected)
-            .reduce((sum, item) => sum + item.price * item.quantity, 0)
-    },
-    deleteSelectedCartItem: () => set(
-        state => ({
-            cartItems: state.cartItems.filter(item => !item.isSelected)
-        })
-    )
-
-})
-
+        return get().cartItems
+            .filter(item => item.isSelected)
+            .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    }
+});
 
 export const useCartStore = create<CartState>()(
     persist(
@@ -202,4 +188,4 @@ export const useCartStore = create<CartState>()(
             })
         }
     )
-)
+);
