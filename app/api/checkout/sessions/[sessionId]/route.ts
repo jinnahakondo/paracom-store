@@ -5,7 +5,6 @@ import { stripe } from "@/lib/stripe";
 import Cart from "@/schemas/cart.schema";
 import Order from "@/schemas/order.schema";
 import Product from "@/schemas/product.schema";
-import { CartItemType } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 
 interface IParams {
@@ -14,94 +13,106 @@ interface IParams {
 
 export async function POST(req: NextRequest, { params }: IParams) {
     try {
-        await connectDb()
-        const { user } = await verifyAuth()
+        await connectDb();
+        const { user } = await verifyAuth();
         const { sessionId } = await params;
-        const { items } = await req.json();
 
-        const session = await stripe.checkout.sessions.retrieve(sessionId)
+        // 1. Retrieve the Checkout Session from Stripe
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-        const productIds = JSON.parse(session.metadata!.productIds);
+        // Verify if the payment was successful
+        if (session.payment_status !== 'paid') {
+            return NextResponse.json(
+                { success: false, message: "Payment has not been completed" },
+                { status: 400 }
+            );
+        }
 
-        const transactionId = session.payment_intent;
+        const transactionId = String(session.payment_intent);
 
-        // check if already order created 
-        const existOrder = await Order.findOne({ "payment.transactionId": transactionId })
+        // 2. Idempotency Check: Prevent duplicate order creation
+        const existOrder = await Order.findOne({ "payment.transactionId": transactionId });
         if (existOrder) {
             return NextResponse.json(
                 {
-                    success: false,
+                    success: true,
                     message: "Order already created",
+                    data: existOrder
                 },
-                { status: 409 }
+                { status: 200 }
             );
         }
 
-        if (session.payment_status === 'paid') {
+        // 3. Extract cart metadata sent during session creation
+        const itemInfoMeta: { productId: string; qty: number }[] = JSON.parse(
+            session.metadata?.itemInfo || "[]"
+        );
 
-            // find product in db 
-            const dbProducts = await Product.find(
-                { _id: { $in: productIds } }
-            )
+        if (itemInfoMeta.length === 0) {
+            throw new Error("No cart items found in payment session metadata");
+        }
 
+        const productIds = itemInfoMeta.map(item => item.productId);
 
-            const orderItems = items.map((item: CartItemType) => {
-                const product = dbProducts.find(p => String(p._id) === item.productId)
-                if (!product) {
-                    throw new Error("Product not found")
-                }
+        // 4. Fetch real product details from Database
+        const dbProducts = await Product.find({ _id: { $in: productIds } });
 
-                return {
-                    productId: product._id,
-                    title: product.title,
-                    price: product.price,
-                    quantity: item.quantity,
-                    subtotal: Number(product.price) * Number(item.quantity)
-                }
-            })
-
-            const subtotal = orderItems.reduce(
-                (total: number, item: any) => total + item.subtotal,
-                0
-            );
-
-            // const shippingFee = subtotal >= 1000 ? 0 : 100;
-            const shippingFee = 50;
-
-            const newOrder = {
-                user: user.id,
-                products: orderItems,
-                subtotal,
-                shippingFee,
-                totalAmount: subtotal + shippingFee,
-                payment: {
-                    paymentStatus: "paid",
-                    transactionId,
-                }
-
+        // 5. Construct order items using server-side DB pricing
+        const orderItems = itemInfoMeta.map((item) => {
+            const product = dbProducts.find(p => String(p._id) === item.productId);
+            if (!product) {
+                throw new Error(`Product not found: ${item.productId}`);
             }
 
+            return {
+                productId: product._id,
+                title: product.title,
+                price: product.price,
+                quantity: item.qty,
+                subtotal: Number(product.price) * Number(item.qty)
+            };
+        });
 
-            const result = await Order.create(newOrder);
+        // 6. Calculate Subtotal and Shipping Fees
+        const subtotal = orderItems.reduce(
+            (total: number, item: any) => total + item.subtotal,
+            0
+        );
 
-            // clear cart 
-            const itemIds = items.map((item: CartItemType) => item._id)
+        const shippingFee = 50;
 
-            await Cart.deleteMany({
-                _id: { $in: itemIds }
-            })
+        const newOrder = {
+            user: user.id,
+            products: orderItems,
+            subtotal,
+            shippingFee,
+            totalAmount: subtotal + shippingFee,
+            payment: {
+                paymentStatus: "paid",
+                transactionId,
+            }
+        };
 
-            return response.success({
-                message: "Order created",
-                status: 201,
-                data: result
-            })
-        }
+        // 7. Persist order into Database
+        const result = await Order.create(newOrder);
 
+        // 8. Delete ordered items from user's cart
+        await Cart.deleteMany({
+            user: user.id,
+            product: { $in: productIds }
+        });
 
+        return response.success({
+            message: "Order created successfully",
+            status: 201,
+            data: result
+        });
 
-        return NextResponse.json({ success: true, sessionId })
     } catch (error: any) {
-        return NextResponse.json({ error: error.message })
+        console.error("Order Creation Error:", error);
+        return NextResponse.json(
+            { error: error.message || "Failed to create order" },
+            { status: 500 }
+        );
     }
 }

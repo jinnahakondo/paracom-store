@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
                 title: product.title,
                 price: product.price,
                 quantity: item.quantity,
-                images: product.images 
+                images: product.images
             };
         });
 
@@ -48,16 +48,16 @@ export async function POST(req: NextRequest) {
                 currency: "bdt",
                 product_data: {
                     name: item.title,
-                    images: item.images, 
+                    images: item.images,
                 },
-                unit_amount: Math.round(Number(item.price) * 100), 
+                unit_amount: Math.round(Number(item.price) * 100),
             },
             quantity: item.quantity,
         }));
 
-    //   data for store product id and quantity in metadata
-        const orderSummaryData = itemsForOrder.map(i => ({
-            id: String(i.productId),
+        //   data for store product id and quantity in metadata
+        const itemInfo = itemsForOrder.map(i => ({
+            productId: String(i.productId),
             qty: i.quantity
         }));
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
             customer_email: String(user.email),
             metadata: {
                 userId: String(user.id),
-                orderSummaryData: JSON.stringify(orderSummaryData),
+                itemInfo: JSON.stringify(itemInfo),
             },
             success_url: `${process.env.BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.BASE_URL}/checkout`
