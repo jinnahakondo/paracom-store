@@ -118,6 +118,9 @@ export async function POST(req: NextRequest, { params }: IParams) {
             }
         };
 
+        console.log({ address, fullAddress, newOrder });
+
+
 
         // 8. Persist order into Database
         const result = await Order.create(newOrder);

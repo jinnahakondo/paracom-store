@@ -13,8 +13,8 @@ const AddressSchema = new Schema(
         division: { type: String, required: true },
         district: { type: String, required: true },
         city: { type: String, required: true },
-        address: String,
         postalCode: String,
+        additionalInfo: String,
         isDefault: {
             type: Boolean,
             default: false,
