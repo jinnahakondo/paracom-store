@@ -39,12 +39,11 @@ export async function POST(req: NextRequest, { params }: IParams) {
 
         if (session.payment_status === 'paid') {
 
-
+            // find product in db 
             const dbProducts = await Product.find(
                 { _id: { $in: productIds } }
             )
 
-            console.log({ items, dbProducts });
 
             const orderItems = items.map((item: CartItemType) => {
                 const product = dbProducts.find(p => String(p._id) === item.productId)
