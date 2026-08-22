@@ -29,7 +29,7 @@ export default function OrderSummaryCard() {
     };
 
     return (
-        <Card className="w-full bg-card text-card-foreground border border-border shadow-md">
+        <Card className="w-full bg-card text-card-foreground border border-border shadow-sm">
             <CardContent className=" space-y-3">
                 <h2 className="text-xl font-bold tracking-tight">Order Summary</h2>
                 {/* Promo Code Section */}

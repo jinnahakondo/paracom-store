@@ -26,7 +26,7 @@ export function CartItem({ item }: ItemType) {
     const totalPrice = Math.round(item.price * item.quantity)
 
     return (
-        <div className="flex items-center gap-4 rounded-xl border bg-card p-2 shadow-sm max-w-md w-full relative group">
+        <div className="flex items-center gap-4 rounded-xl border p-2 shadow-sm w-full relative group bg-accent">
             {/* checkbox  */}
             <Checkbox
                 checked={item.isSelected}
